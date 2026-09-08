@@ -164,6 +164,12 @@ def join_present_map_df_to_mapping_df(
     help="This is an optional path to a custom rules file with strict formatting. It will over write the original rules file that is stored with the script. This option cannot be specified if `--rule_tsv` is specified.",
 )
 @click.option(
+    "--common_rules_tsv",
+    "-c",
+    type=click.Path(exists=True),
+    help="Path to rules sheet with common rules to be added to all rules sheet. Useful for common aliases across multiple rules.",
+)
+@click.option(
     "--mapping",
     "-m",
     type=Path,
@@ -210,6 +216,7 @@ def main(
     dashboard,
     rules_system,
     rules_tsv,
+    common_rules_tsv,
     mapping,
     label_column,
     alias_column,
@@ -276,6 +283,7 @@ def main(
         alias_col=alias_column,
         rules_col="rule",
         allow_visualize_functions=True,
+        common_rules_path=common_rules_tsv
     )
     # kw = dict(rules_path=rules_path, label_col="module", parent_col=alias_column, rules_col="rule")
     compiled = CompiledRules.from_rules(**kw)

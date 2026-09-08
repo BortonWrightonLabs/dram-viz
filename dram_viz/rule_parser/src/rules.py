@@ -26,6 +26,7 @@ OP_TO_EXPR = {
 ALLOWED_CMPOPS = set(OP_TO_EXPR.keys())
 AT_LEAST_MODES = set(["PRESENCE", "COUNTS"])
 
+
 class RuleError(Exception):
     pass
 
@@ -166,10 +167,14 @@ class Call(Expr):
                     raise RuleError(f"{self.value} expects 1 arg. args: {self.args}")
             case "percent":
                 if n_args != 2:
-                    raise RuleError(f"{self.value}(n, Group) expects 2 args. args: {self.args}")
+                    raise RuleError(
+                        f"{self.value}(n, Group) expects 2 args. args: {self.args}"
+                    )
             case "at_least":
                 if n_args != 3:
-                    raise RuleError(f"{self.value}(n, mode, Group) expects 3 args. args: {self.args}")
+                    raise RuleError(
+                        f"{self.value}(n, mode, Group) expects 3 args. args: {self.args}"
+                    )
             case "column_count_values":
                 if n_args != 5:
                     raise RuleError(
@@ -365,12 +370,14 @@ class CompiledRules:
 
 
 def load_rules(
-    rules_path: str = None,
+    rules_path: str | Path = None,
     rules: pl.LazyFrame = None,
     label_col: str = "name",
     alias_col: str = "alias",
     rules_col: str = "rule",
     allow_visualize_functions: bool = False,
+    common_rules: pl.LazyFrame = None,
+    common_rules_path: str | Path = None,
 ) -> Tuple[Dict[str, Expr], Dict[str, Expr]]:
     """
     Assumes TSV has columns at least: name, rule
@@ -388,6 +395,15 @@ def load_rules(
         ).fill_null("")
     else:
         lf = rules.fill_null("")
+
+    if common_rules_path:
+        clf = pl.scan_csv(
+            common_rules_path, separator="\t", infer_schema_length=None
+        ).fill_null("")
+    elif common_rules is not None:
+        clf = common_rules.fill_null("")
+    else:
+        clf = None
 
     # Normalize columns
     cols = set(lf.collect_schema().names())
@@ -428,12 +444,13 @@ def load_rules(
             if hasattr(e, "get_context"):
                 logger.error(e.get_context(expr_str))
                 raise RuleError(
-                    f"Error parsing rule expression for unknown reason. Possible hints could be found from the lark parsing context: {e.get_context(expr_str)}" 
+                    f"Error parsing rule expression for unknown reason. Possible hints could be found from the lark parsing context: {e.get_context(expr_str)}"
                 ) from e
-            else: 
+            else:
                 raise RuleError(
-                        f"Error parsing rule expression for unknown reason. Possible hints could be found in the above exceptions from the parsing library Lark: {expr_str}"
-                    ) from e
+                    f"Error parsing rule expression for unknown reason. Possible hints could be found in the above exceptions from the parsing library Lark: {expr_str}"
+                ) from e
+
     lf = lf.with_columns(
         [
             pl.col(rules_col)
@@ -444,6 +461,25 @@ def load_rules(
 
     lf = lf.with_columns(pl.col(pl.String).replace("", None))
 
+    if not has_alias_col:
+        lf = lf.with_columns(pl.col(label_col).str.replace(" ", "").alias(alias_col))
+
+    if clf is not None:
+        clf = clf.with_columns(
+            [
+                (
+                    pl.col("rule")
+                    .str.strip_chars()
+                    .map_elements(parse_rule_expr, return_dtype=pl.Object)
+                    .alias(rules_col)
+                ),
+                pl.col("name").alias(label_col),
+                pl.col("alias").alias(alias_col),
+            ],
+        )
+
+        lf = pl.concat([lf, clf], how="diagonal_relaxed")
+
     rules = {
         a: b
         for a, b in lf.filter(~pl.col(label_col).is_null())
@@ -452,15 +488,13 @@ def load_rules(
         .iter_rows()
     }
 
-    definitions = {}
-    if has_alias_col:
-        definitions = {
-            a: b
-            for a, b in lf.filter(~pl.col(alias_col).is_null())
-            .select([pl.col(alias_col), pl.col(rules_col)])
-            .collect()
-            .iter_rows()
-        }
+    definitions = {
+        a: b
+        for a, b in lf.filter(~pl.col(alias_col).is_null())
+        .select([pl.col(alias_col), pl.col(rules_col)])
+        .collect()
+        .iter_rows()
+    }
 
     return definitions, rules, lf
 
@@ -606,6 +640,7 @@ def expand_macros(
 
     return recurse(expr)[0]
 
+
 def prepare_present_map_df(
     df: pl.DataFrame,
     count_col: str,
@@ -613,7 +648,6 @@ def prepare_present_map_df(
     needed_features: Set[str],
     additional_cols: List[str] = None,
     group_col: str = None,
-
 ):
     additional_cols = additional_cols or []
     index_cols = [count_col, group_col] if group_col else [count_col]
@@ -656,7 +690,7 @@ def build_present_map(
     sample_col: str,
     needed_features: Set[str],
     sample_names: list[str],
-    value_col: str = None
+    value_col: str = None,
 ) -> Tuple[List[str], Dict[str, np.ndarray]]:
     """Build present_map of needed gene_ids from annotations DataFrame"""
     hit_col = "hit"
@@ -665,9 +699,7 @@ def build_present_map(
 
     sample_index = {s: i for i, s in enumerate(sample_names)}
     n = len(sample_names)
-    present_map: Dict[str, np.ndarray] = {
-        f: np.zeros(n) for f in needed_features
-    }
+    present_map: Dict[str, np.ndarray] = {f: np.zeros(n) for f in needed_features}
 
     # Group by hit_id and set booleans
     for hit_id, sub in df.group_by(hit_col):
@@ -678,7 +710,9 @@ def build_present_map(
 
         if value_col:
             # for name, value in sub.select([sample_col, value_col]).iter_rows():
-            for name, value in sub.group_by([sample_col]).agg(pl.col(value_col).sum()).iter_rows():
+            for name, value in (
+                sub.group_by([sample_col]).agg(pl.col(value_col).sum()).iter_rows()
+            ):
                 arr[sample_index[name]] = value
         else:
             for name, count in sub[sample_col].value_counts().iter_rows():
@@ -767,7 +801,9 @@ class Evaluator:
                 f"Expected Steps or Iterable of Expr for cycle evaluation, got {expr}"
             )
         mat = (
-            np.stack(parts, axis=1, dtype=bool, casting="unsafe")  # unsafe here because we want float -> bool
+            np.stack(
+                parts, axis=1, dtype=bool, casting="unsafe"
+            )  # unsafe here because we want float -> bool
             if parts
             else np.zeros((len(self.samples), 0), dtype=bool)
         )
@@ -800,7 +836,9 @@ class Evaluator:
                 )
             case "at_least":
                 return self.at_least(
-                    _as_int(args[0]), _as_str(args[1]), self.eval_cycle(args[2], simplify=False)
+                    _as_int(args[0]),
+                    _as_str(args[1]),
+                    self.eval_cycle(args[2], simplify=False),
                 )
             case "tax":
                 return self.tax(_as_str(args[0]), **kwargs)
@@ -821,7 +859,9 @@ class Evaluator:
                     **kwargs,
                 )
             case "filter_contains":
-                return self.filter_contains(col=_as_str(args[0]), val=_as_str(args[1]), **kwargs)
+                return self.filter_contains(
+                    col=_as_str(args[0]), val=_as_str(args[1]), **kwargs
+                )
             case "filter_compare":
                 return self.filter_compare(
                     col=_as_str(args[0]),
@@ -895,7 +935,9 @@ class Evaluator:
     @staticmethod
     def at_least(k: int, mode: str, x: np.ndarray) -> np.ndarray:
         if mode.upper() not in AT_LEAST_MODES:
-            raise ValueError(f"Unsupported at_least mode: {mode}. Use one of {AT_LEAST_MODES}")
+            raise ValueError(
+                f"Unsupported at_least mode: {mode}. Use one of {AT_LEAST_MODES}"
+            )
         if mode == "PRESENCE":
             x = x.astype(bool)
         return x.sum(axis=1) >= k
@@ -904,7 +946,16 @@ class Evaluator:
         df = self.annotations if df is None else df
         if "taxonomy" not in df.columns:
             return np.zeros(len(self.samples), dtype=bool)
-        return self._sort_df_to_ordered_df(df.group_by(self.sample_col).agg(pl.col("taxonomy").str.contains(tax_label).any())).select("taxonomy").to_series().to_numpy()
+        return (
+            self._sort_df_to_ordered_df(
+                df.group_by(self.sample_col).agg(
+                    pl.col("taxonomy").str.contains(tax_label).any()
+                )
+            )
+            .select("taxonomy")
+            .to_series()
+            .to_numpy()
+        )
 
     @eval_filter_dec
     def column_count_values(
@@ -1017,7 +1068,7 @@ def evaluate_rules(
     present_map: Dict[str, np.ndarray],
     annotations: Optional[pl.DataFrame] = None,
     sample_col: Optional[str] = None,
-    bool_output: bool = True
+    bool_output: bool = True,
 ) -> pl.DataFrame:
     ev = Evaluator(
         samples=samples,
@@ -1052,9 +1103,11 @@ def evaluate_cycles(
     sample_col: Optional[str] = None,
     additional_cols: Optional[List[str]] = None,
     anno_df: pl.DataFrame = None,
-    value_col: str = None
+    value_col: str = None,
 ) -> pl.DataFrame:
-    assert ((anno_df is None and value_col is None) or (anno_df is not None and value_col is not None)), "anno_df and value_col must both be None or neither be None"
+    assert (anno_df is None and value_col is None) or (
+        anno_df is not None and value_col is not None
+    ), "anno_df and value_col must both be None or neither be None"
     ev = Evaluator(
         samples=samples,
         present_map=present_map,
@@ -1064,7 +1117,10 @@ def evaluate_cycles(
     # if group_col in set(compiled.lf.collect_schema().names()):
     dfs = {}
     additional_cols = [pl.col(c) for c in additional_cols] if additional_cols else []
-    for group, frame in compiled.df.group_by(group_col, maintain_order=True):
+    # We drop nones here to make sure any rules without groups just aren't included
+    for group, frame in compiled.df.drop_nulls(subset=[group_col]).group_by(
+        group_col, maintain_order=True
+    ):
         group = group[0]
         dfs[group] = []
         for rn in frame.select(pl.col(label_col)).to_series():
@@ -1074,7 +1130,9 @@ def evaluate_cycles(
             expr = compiled.rules[rn]
             out = ev.eval_bool(expr)
             if isinstance(out, np.ndarray):
-                out = pl.DataFrame({"present": out.astype(bool), sample_col: ev.samples})
+                out = pl.DataFrame(
+                    {"present": out.astype(bool), sample_col: ev.samples}
+                )
             out = out.with_columns(pl.lit(rn).alias(label_col))
             if anno_df is not None:
                 if "coverage_percentage" in out.columns:
@@ -1082,7 +1140,9 @@ def evaluate_cycles(
                 elif "present" in out.columns:
                     check_col = "present"
                 else:
-                    raise AssertionError("Rules parsing problem, can't determine check_col for mapping. File github issue")
+                    raise AssertionError(
+                        "Rules parsing problem, can't determine check_col for mapping. File github issue"
+                    )
 
                 out = (
                     out.join(
@@ -1090,17 +1150,20 @@ def evaluate_cycles(
                         # then we group by the sample col
                         # and se sum them over the value column
                         (
-                            anno_df
-                            .filter(pl.col("hit").is_in(compiled.features_by_rules[rn]))
+                            anno_df.filter(
+                                pl.col("hit").is_in(compiled.features_by_rules[rn])
+                            )
                             .group_by([sample_col])
                             .agg(pl.col(value_col).sum())
                         ),
-                        on=sample_col, 
-                        how="left", 
-                        validate="1:1"
+                        on=sample_col,
+                        how="left",
+                        validate="1:1",
                     )
                     # we want to scale the summed value columns by the check column (presence/absence or coverage %)
-                    .with_columns(pl.col(value_col).fill_null(strategy="zero") * pl.col(check_col))
+                    .with_columns(
+                        pl.col(value_col).fill_null(strategy="zero") * pl.col(check_col)
+                    )
                 )
             dfs[group].append(out)
 
@@ -1121,7 +1184,7 @@ def evaluate_rules_on_anno(
     count_col: str,
     annotations_path: os.PathLike = None,
     annotations: pl.DataFrame = None,
-    group_col: str | None = None, 
+    group_col: str | None = None,
     *args,
     **kwargs,
 ):
@@ -1139,9 +1202,11 @@ def evaluate_rules_on_anno(
             annotations = pl.read_csv(
                 annotations_path, separator="\t", infer_schema_length=None
             )
-    
-    sample_col=group_col if group_col else count_col
-    sample_names = annotations.select(sample_col).unique().sort(sample_col).to_series().to_list()
+
+    sample_col = group_col if group_col else count_col
+    sample_names = (
+        annotations.select(sample_col).unique().sort(sample_col).to_series().to_list()
+    )
     df = prepare_present_map_df(
         df=annotations,
         count_col=count_col,
@@ -1154,7 +1219,7 @@ def evaluate_rules_on_anno(
         df=df,
         sample_col=sample_col,
         needed_features=compiled.needed_features,
-        sample_names=sample_names
+        sample_names=sample_names,
     )
 
     df = evaluate_rules(
@@ -1162,6 +1227,6 @@ def evaluate_rules_on_anno(
         sample_names,
         present_map,
         annotations=annotations,
-        sample_col=sample_col
+        sample_col=sample_col,
     )
     return df

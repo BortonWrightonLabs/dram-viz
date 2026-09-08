@@ -100,20 +100,3 @@ Beta-lactams	Beta-lactams	K18698|K18699|K18796|K18767|K18797|K19097|K19317|K1876
 Macrolides	Macrolides	K00561|K14336|K15632|K18230|K18231|K19349|K19350|K18232|K19541|K08217|K18833|K08160|K06880|K18235|K19545|K18236|K18234|K21251|K06979	Environmental Adaptation	Antibiotic Resistance		"K00561 , K14336 , K15632 , K18230 , K18231 , K19349 , K19350 , K18232 , K19541 , K08217 , K18833 , K08160 , K06880 , K18235 , K19545 , K18236 , K18234 , K21251 , K06979"
 Sulfonamides	Sulfonamides	K18974|K18824|K18825|EC:2.5.1.15	Environmental Adaptation	Antibiotic Resistance		"K18974 , K18824 , K18825 , EC:2.5.1.15"
 Tetracyclines	Tetracyclines	K08151|K08168|K18214|K18215|K18218|K18216|K18217|K19542|K18233|K18220|K18221|EC:1.14.13.231	Environmental Adaptation	Antibiotic Resistance		"K08151 , K08168 , K18214 , K18215 , K18218 , K18216 , K18217 , K19542 , K18233 , K18220 , K18221 , EC:1.14.13.231"
-	ETC50	percent50ComplexIA | percent50ComplexIB | percent50ComplexIC	Redox Ladder	Oxygen		
-	percent50ComplexIA	"percent(50,ComplexIA)"	Redox Ladder	Oxygen		
-	percent50ComplexIB	"percent(50,ComplexIB)"	Redox Ladder	Oxygen		
-	percent50ComplexIC	"percent(50,ComplexIC)"	Redox Ladder	Oxygen		
-	ComplexIA	"K00330,[K00331 & K00332 & [K00333 | K00331] & [K13378 | K13380]],K00334,K00335,K00336,K00337,K00338,K00339,K00340,[[K00341 & K00342] | K15863],K00343"	Redox Ladder	Oxygen		
-	ComplexIB	"K05574,K05582,K05581,K05579,K05572,K05580,K05578,K05576,K05577,K05575,K05573,K05583,K05584,K05585"	Redox Ladder	Oxygen		
-	ComplexIC	"K03945,K03946,K03947,K03948,K03949,K03950,K03951,K03952,K03953,K03954,K03955,K03956,K11352,K11353"	Redox Ladder	Oxygen		
-	percent50CytochromeCOxidase	"percent(50,CytochromeCOxidase)"	Redox Ladder	Oxygen		
-	percent50CytochromeAa3600MenaquinolOxidase	"percent(50,CytochromeAa3600MenaquinolOxidase)"	Redox Ladder	Oxygen		
-	percent50CytochromeOUbiquinolOxidase	"percent(50,CytochromeOUbiquinolOxidase)"	Redox Ladder	Oxygen		
-	CytochromeCOxidase	"K02274,K02275,K02276,K02277"	Redox Ladder	Oxygen		
-	CytochromeAa3600MenaquinolOxidase	"K02826,K02827,K02828,K02829"	Redox Ladder	Oxygen		
-	CytochromeOUbiquinolOxidase	"K02297,K02298,K02299,K02300"	Redox Ladder	Oxygen		
-	percent50CytochromeBDUbiquinolOxidase	"percent(50,CytochromeBDUbiquinolOxidase)"	Redox Ladder	Oxygen		
-	percent50CytochromeCOxidaseCBB3	"percent(50,CytochromeCOxidaseCBB3)"	Redox Ladder	Oxygen		
-	CytochromeBDUbiquinolOxidase	"K00425,K00426,K00424 , K22501"	Redox Ladder	Oxygen		
-	CytochromeCOxidaseCBB3	"K00404 , K00405 , K15862,K00407,K00406"	Redox Ladder	Oxygen		

@@ -164,6 +164,12 @@ def join_present_map_df_to_mapping_df(
     help="This is an optional path to a custom rules file with strict formatting. It will over write the original rules file that is stored with the script. This option cannot be specified if `--rule_tsv` is specified.",
 )
 @click.option(
+    "--common_rules_tsv",
+    "-c",
+    type=click.Path(exists=True),
+    help="Path to rules sheet with common rules to be added to all rules sheet. Useful for common aliases across multiple rules.",
+)
+@click.option(
     "--mapping",
     "-m",
     type=Path,
@@ -210,6 +216,7 @@ def main(
     dashboard,
     rules_system,
     rules_tsv,
+    common_rules_tsv,
     mapping,
     label_column,
     alias_column,
@@ -276,6 +283,7 @@ def main(
         alias_col=alias_column,
         rules_col="rule",
         allow_visualize_functions=True,
+        common_rules_path=common_rules_tsv
     )
     # kw = dict(rules_path=rules_path, label_col="module", parent_col=alias_column, rules_col="rule")
     compiled = CompiledRules.from_rules(**kw)
@@ -414,9 +422,9 @@ def main(
 
     if save_dataframes:
         for df_type, dfs_dict in dfs.items():
-            for key, df in dfs_dict.items():
-                df.write_csv(output_dir / f"{key}_df_{df_type}.tsv", separator="\t")
-                logger.info(f"Saved {key} dataframe to {output_dir / f'{key}_df_{df_type}.tsv'}")
+            df = pl.concat([d for key, d in dfs_dict.items() if key != "Meta"], how="diagonal_relaxed")
+            df.write_csv(output_dir / f"df_{df_type}.tsv", separator="\t")
+            logger.info(f"Saved dataframe to {output_dir / f'df_{df_type}.tsv'}")
 
     kw = dict(
         dfs=dfs,

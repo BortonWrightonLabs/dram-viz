@@ -422,9 +422,9 @@ def main(
 
     if save_dataframes:
         for df_type, dfs_dict in dfs.items():
-            for key, df in dfs_dict.items():
-                df.write_csv(output_dir / f"{key}_df_{df_type}.tsv", separator="\t")
-                logger.info(f"Saved {key} dataframe to {output_dir / f'{key}_df_{df_type}.tsv'}")
+            df = pl.concat([d for key, d in dfs_dict.items() if key != "Meta"], how="diagonal_relaxed")
+            df.write_csv(output_dir / f"df_{df_type}.tsv", separator="\t")
+            logger.info(f"Saved dataframe to {output_dir / f'df_{df_type}.tsv'}")
 
     kw = dict(
         dfs=dfs,

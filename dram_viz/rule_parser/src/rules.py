@@ -530,7 +530,7 @@ def expand_macros(
                 out = expr
                 # This will slightly
                 if add_name_to_needed and not skip_needed:
-                    needed_features.add(name)
+                    needed_features.add(name.upper())
             entries, exits = {expr}, {expr}
         elif isinstance(expr, (Number, String)):
             out = expr
@@ -745,7 +745,7 @@ class Evaluator:
     def eval_bool(self, expr: Expr, reduce_outer_and=True) -> np.ndarray:
         out = None
         if isinstance(expr, Name):
-            out = self.present_map.get(expr.value, self._all_false)
+            out = self.present_map.get(expr.value.upper(), self._all_false)
 
         if isinstance(expr, And):
             out = np.stack([self.eval_bool(part) for part in expr.parts], axis=1)

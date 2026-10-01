@@ -103,8 +103,8 @@ name	alias	rule
 	3Hydroxypropionate	@MalylCoA_SCitramalylCoALyase & @3HydroxypropionateCycle50p
 	3HydroxypropionateCycle50p	percent(50, @3HydroxypropionateCycle)
 	3HydroxypropionateCycle	K14449 | EC:4.2.1.148,K14470 | EC:5.4.1.3,K09709 | EC:4.2.1.153
-	MalylCoA_SCitramalylCoALyase	K08691 | @MalylCoA_SCitramalylCoALyaseEC:
-	MalylCoA_SCitramalylCoALyaseEC:	EC:4.1.3.24 & EC:4.1.3.25
+	MalylCoA_SCitramalylCoALyase	K08691 | @MalylCoA_SCitramalylCoALyaseEC
+	MalylCoA_SCitramalylCoALyaseEC	EC:4.1.3.24 & EC:4.1.3.25
 	ReductiveAcetylCoAWoodLjungdahl	@ReductiveAcetylCoAWoodLjungdahl_Bacterial | @ReductiveAcetylCoAWoodLjungdahl_Archaeal
 	ReductiveAcetylCoAWoodLjungdahl_Bacterial	at_least(3, PRESENCE, [ [@FormateDehydrogenase_1 | @FormateDehydrogenase_2], @FormateTetrahydrofolateLigase, @MethylenetetrahydrofolateDehydrogenaseCyclohydrolase, @MethylenetetrahydrofolateReductase ]) & @5-MethylTHF-CorrinoidFeSProteinMethyltransferase & at_least(2, PRESENCE, [ @AnaerobicCarbonMonoxideDehydrogenase, @CODH_ACS_Complex , @AcetylCoASynthase])
 	FormateDehydrogenase_1	K05299 & K15022
@@ -150,7 +150,7 @@ name	alias	rule
 	HydrogenUse	"NiFe_group1 | NiFe_group2 | NiFe_group3 | NiFe_group4 | FeFe_GroupA | FeFe_GroupB | FeFe_GroupC | FeFe_GroupE | FeFe_GroupF "
 
 	Fermenter	not(@NegativeForFermenter) &  [@Lactate-Final | Ethanol | @Acetate-Final | @Butyrate-Final | @Propionate-Final] & [K00850 | K00873 | K01690 | K01625 | K00615 | K00616]
-	NegativeForFermenter	@ETC50 | @Methanogen | @Denitrifier | @Sulfatereducer | @AerobicAmmoniaOxidizer | @Aerobe | @Microaerophillic | phototroph
+	NegativeForFermenter	@ETC50 | @Methanogen | @Denitrifier | @Sulfatereducer | @AerobicAmmoniaOxidizer | @Aerobe | @Microaerophillic | @phototroph
 	Denitrifier	@ETC50 & [[@NarNitrateReductase | @NapNitrateReductase] | @NitriteReductase | @NitricOxideReductase | @NitrousOxideReductase]
 	NitrousOxideReductase	K00376 | EC:1.7.2.4
 	NitricOxideReductase	K04561 | K15877 | EC:1.7.2.5
@@ -179,7 +179,7 @@ name	alias	rule
 	CytochromeCOxidaseCBB3	K00404 | K00405 | K15862,K00407,K00406
 	NotNarNapNrf	not(@NarNapNrf)
 	NarNapNrf	@NarNitrateReductase | @NapNitrateReductase | NRF
-	NapNitrateReductase	" K00374 | K02567 | K02568 |  EC:1.9.6.1"
+	NapNitrateReductase	K00374 | K02567 | K02568 |  EC:1.9.6.1
 	NarNitrateReductase	NarG
 
 	Nreducer	@ETC50 & [[@NarNitrateReductase|@NapNitrateReductase] | @NitriteReductase | @NitricOxideReductase | @NitrousOxideReductase]
@@ -192,7 +192,7 @@ name	alias	rule
 	DNRA	[@nrfA & [@NarNitrateReductase | @NapNitrateReductase]] | @nrfA
 	nrfA	K03385 | EC:1.7.2.2
 
-	AerobicAmmoniaOxidizer	"@TRUEAmmoniaMonooxygenase "
+	AerobicAmmoniaOxidizer	@TRUEAmmoniaMonooxygenase
 	ProbableAmmoniaMonooxygenase	EC:1.14.99.39 | K10944 | K10945 | K10946
 	TRUEAmmoniaMonooxygenase	amoa_beta | amoa_crenarchaea | amoa_gamma | amoa_Nitrospira_beta
 	HydroxylamineDehydrogenase	EC:1.7.2.6 | K10535
@@ -253,7 +253,6 @@ name	alias	rule
 	Fdo_hydrogenase	at_least(1,PRESENCE, [K00123, K00124])
 	FdhF	K22015
 	FdhAB	at_least(1,PRESENCE,[K00125,K22516])
-	FormateDehydrogenase_1	K05299 & K15022
 	McrAor3999	[McrA | K00399]
 
 	acetoclastic	@McrAor3999 & at_least(1, PRESENCE, [K00193,K00194,K00197,K00198]) &[[K00925&K00625]|K01895] & [tax(g__Methanosarcina)|tax(f__Methanotrichaceae)] & not(@McrAor3999 & [tax(g__Methanocomedens_A)|tax(g__Methanocomedens_B)|tax(g__Methanogaster_A)|tax(g__Methanogaster_B)|tax(g__Methanoperedens_A)|tax(g__Methanoperedens)|tax(g__ANME-1-THS)|tax(g__ANME1a)|tax(g__G60ANME1)|tax(g__Methanophaga)|tax(g__Methanovorans)|tax(g__Methanomarinus)|tax(g__Methanoxibalbensis)|tax(g__Methanospirare)|tax(g__Kmv04)|tax(g__Methanogaster_C)|tax(g__Methanogaster_D)|tax(g__CAZCRM01)|tax(g__UBA10536)|tax(g__Methanoxibalbensis)])

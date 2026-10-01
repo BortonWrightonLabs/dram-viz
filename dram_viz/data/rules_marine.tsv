@@ -11,14 +11,14 @@ butyrate (scfa)	k00634 & [k00929 | k01896]	carbon processing	medium carbon	butyr
 lactate (scfa)	k00016 | k00101 | k03778 | k03777	carbon processing	medium carbon	lactate formation can occur through l-lactate dehydrogenases (k00016, k00101) or d-lactate variants (k03778, k03777). presence of any indicates capacity for pyruvate reduction to lactate.	k00016, k00101, k03778, k03777
 propionate (scfa)	k19697 & k01026	carbon processing	medium carbon	propionate formation requires both propionate kinase (k19697) and propionate coa-transferase (k01026) for coa-dependent conversion of intermediates to propionate.	k19697, k01026
 pyruvate (scfa)	k00163 | k00174 | k00656	carbon processing	medium carbon	pyruvate conversion to acetyl-coa occurs via one of three enzyme complexes: pyruvate dehydrogenase (k00163), 2-oxoacid ferredoxin oxidoreductase (k00174), or formate-acetyltransferase (k00656). presence of any indicates potential for acetyl-coa formation.	k00163, k00174, k00656
-arabinose	k01804 | k00011 | k26066 | k13873 | k19660 | k12446	carbon processing	medium carbon		
-fructose	k00008 | k00045 | k27924 | k00007 | k00844 | k00847 | k01805 | k00846 | k27475 | k02768 | k02769 | k02770 | k02771 | k11194 | k11195 | k11196	carbon processing	medium carbon		
-fucose	k00879 | k01628 | k01818	carbon processing	medium carbon		
-galactose	k00849 | k00965 | k01784 | k01785	carbon processing	medium carbon		
-mannose	k01809 | k02793 | k02794 | k02795 | k02796	carbon processing	medium carbon		
-rhamnose	k01813 | k01820 | k18337	carbon processing	medium carbon		
-sucrose	k01182 | k01203 | k12047 | k01187 | k12316 | k12317 | k06617 | k01193 | k00695 | k02810 | k00690 | k05341 | k00689 | k00692	carbon processing	medium carbon		
-xylose	k00854 | k01805 | k00008 | k00011 | k05351 | k17743 | k00078 | k14273 | k14274 | k14275	carbon processing	medium carbon		
+arabinose	k01804 | k00011 | k26066 | k13873 | k19660 | k12446	carbon processing	medium carbon
+fructose	k00008 | k00045 | k27924 | k00007 | k00844 | k00847 | k01805 | k00846 | k27475 | k02768 | k02769 | k02770 | k02771 | k11194 | k11195 | k11196	carbon processing	medium carbon
+fucose	k00879 | k01628 | k01818	carbon processing	medium carbon
+galactose	k00849 | k00965 | k01784 | k01785	carbon processing	medium carbon
+mannose	k01809 | k02793 | k02794 | k02795 | k02796	carbon processing	medium carbon
+rhamnose	k01813 | k01820 | k18337	carbon processing	medium carbon
+sucrose	k01182 | k01203 | k12047 | k01187 | k12316 | k12317 | k06617 | k01193 | k00695 | k02810 | k00690 | k05341 | k00689 | k00692	carbon processing	medium carbon
+xylose	k00854 | k01805 | k00008 | k00011 | k05351 | k17743 | k00078 | k14273 | k14274 | k14275	carbon processing	medium carbon
 alcohol	k00001 | k00121 | k04072 | k13951 | k13952 | k13953 | k13954 | k13980 | k18857	carbon processing	medium carbon	for a genome to have alcohol conversion capability, it should encode: at least one alcohol dehydrogenase or related enzyme involved in ethanol and higher-alcohol interconversion.	k00001, k00121, k04072, k13951, k13952, k13953, k13954, k13980, k18857
 fatty acid degradation β-oxidation 	[k06445 | k00249 | k00255 | k09479] & [k13767 | k01825] & k00632	carbon processing	medium carbon	for a genome to have fatty acid degradation capability via β-oxidation, it should encode at least one acyl-coa dehydrogenase (fade,k06445,k00249,k00255,k09479), one enoyl-coa hydratase (fadb,k13767,k01825), and thiolase (fada,k00632) completing one full β-oxidation cycle. 	k06445, k00249, k00255, k09479, k13767, k01825, k00632
 aerobic ch4 oxidation	[k10944 & k10945 & k10946] | [k16157 & k16158 & k16159 & k16160 & k16161 & k16162]	carbon processing	little carbon	for a genome to have ch₄ oxidation capability, it must encode at least one methane monooxygenase complex (pmmo or smmo), which catalyzes the conversion of methane to methanol. 	k16157, k16158, k16159, k16160, k16161, k16162, k10944, k10945, k10946

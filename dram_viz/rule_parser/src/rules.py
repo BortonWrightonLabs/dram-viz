@@ -7,6 +7,7 @@ import operator
 import os
 from pathlib import Path
 import functools
+import json
 
 import networkx as nx
 import numpy as np
@@ -61,14 +62,18 @@ ID_EXPR_DICT = {
         .str.extract_all(r"([\d\.\-]+)")
         .list.eval(pl.concat_str([pl.lit("EC:"), pl.element()]))
     ),
-    "dbcan_EC": (
-        pl.col("dbcan_EC")
+    "dbcan_sub_ec": (
+        pl.col("dbcan_sub_ec")
         .cast(pl.Utf8)
-        .str.extract_all(r"([\d\.\-]+)")
-        .list.eval(pl.concat_str([pl.lit("EC:"), pl.element()]))
+        .replace({"-": None})
+        .str.split(";")
+        .list.eval(
+            pl.concat_str([pl.lit("EC:"), pl.element().str.split(":").list.first()])
+        )
     ),
-    "cazy_best_hit": pl.col("cazy_best_hit").cast(pl.Utf8).str.split("_"),
-    "dbcan_id": pl.col("dbcan_id").cast(pl.Utf8).str.split("_"),
+    "dbcan_id": pl.col("dbcan_id").cast(pl.Utf8).str.split(";"),
+    "dbcan_sub_id": pl.col("dbcan_sub_id").cast(pl.Utf8).str.split(";"),
+    "dbcan_sub_substrate": pl.col("dbcan_sub_substrate").cast(pl.Utf8).str.split(";"),
     "methyl_id": (
         pl.col("methyl_id")
         .cast(pl.Utf8)
@@ -76,6 +81,12 @@ ID_EXPR_DICT = {
         .list.eval(pl.element().str.strip_chars().str.split(" ").list.first())
     ),
     "DEFAULT": lambda col: pl.col(col).cast(pl.Utf8).cast(pl.List(pl.Utf8)),
+}
+
+COMPUTED_COLUMNS = {
+    "dbcan_id_ec": pl.concat_str(
+        [pl.col("dbcan_id"), pl.col("dbcan_sub_ec")], separator=";"
+    )
 }
 
 CALL_FUNCTIONS = {
@@ -112,7 +123,12 @@ class Expr:
 @dataclass(frozen=True)
 class Name(Expr):
     value: str
-    db: str | None = None
+    qualifier: str | None = None
+
+
+@dataclass(frozen=True)
+class Alias(Expr):
+    value: str
 
 
 @dataclass(frozen=True)
@@ -271,11 +287,11 @@ class ASTTransformer(Transformer):
         super().__init__()
 
     def simple_name(self, items):
-        return Name(value=str(items[0]), db=None)
+        return Name(value=str(items[0]), qualifier=None)
 
     def qualified_name(self, items):
-        db, value = items
-        return Name(value=str(value), db=str(db))
+        qualifier, value = items
+        return Name(value=str(value), qualifier=str(qualifier))
 
     def quoted_name(self, items):
         val_index = 0 if (len(items) == 1) else 1
@@ -285,6 +301,14 @@ class ASTTransformer(Transformer):
         if len(items) == 2:
             return self.qualified_name(items)
         return self.simple_name(items)
+
+    def alias_name(self, items):
+        return Alias(value=str(items[0]))
+
+    def quoted_alias_name(self, items):
+        value = str(items[0])
+        value = value[1:-1].replace(r"\`", "`").replace(r"\\", "\\")
+        return Alias(value=value)
 
     def number(self, items):
         return Number(float(str(items[0])))
@@ -345,7 +369,6 @@ class CompiledRules:
         }
 
         # Expand rules using expanded defs
-        # we need to hit again in case defs is empty (no alias col)
         # and we still need to add needed features from rules
         features_by_rules = {k: set() for k in rules.keys()}
         trees_by_rules = {k: nx.DiGraph() for k in rules.keys()}
@@ -390,16 +413,20 @@ def load_rules(
         "Either rules_path or rules DataFrame must be provided, but not both."
     )
     if rules_path:
-        lf = pl.scan_csv(
-            rules_path, separator="\t", infer_schema_length=None
-        ).fill_null("")
+        lf = (
+            pl.scan_csv(rules_path, separator="\t", infer_schema_length=None)
+            .filter(~pl.all_horizontal(pl.all().is_null()))
+            .fill_null("")
+        )
     else:
         lf = rules.fill_null("")
 
     if common_rules_path:
-        clf = pl.scan_csv(
-            common_rules_path, separator="\t", infer_schema_length=None
-        ).fill_null("")
+        clf = (
+            pl.scan_csv(common_rules_path, separator="\t", infer_schema_length=None)
+            .filter(~pl.all_horizontal(pl.all().is_null()))
+            .fill_null("")
+        )
     elif common_rules is not None:
         clf = common_rules.fill_null("")
     else:
@@ -439,7 +466,7 @@ def load_rules(
             if expr_str.count("&") > 0 and expr_str.count("|") > 0:
                 # both used; likely missing brackets
                 raise RuleError(
-                    f"Possible ambiguous use of '&' or '|' without surrounding brackets `[ ]`. Check that you don't have a situation like `A | B & C` or `A & B | C`. These are generally not allowed because they can be ambiguous. These should be written as `[A | B] & C` or `[A & B] | C`: {expr_str}."
+                    f"Possible ambiguous use of '&' or '|' without surrounding brackets `[ ]`. Check that you don't have a situation like `A | B & C` or `A & B | C`. These are generally not allowed because they can be ambiguous. These should be written as `[A | B] & C` or `A | [B & C]`: {expr_str}."
                 ) from e
             if hasattr(e, "get_context"):
                 logger.error(e.get_context(expr_str))
@@ -506,31 +533,42 @@ def expand_macros(
     graph: Optional[nx.DiGraph] = None,
 ) -> Expr:
     """Expand recursively macros in expr using definitions"""
-    memo: Dict[Expr, Expr] = {}
+    # TODO: make the expanded aliases get parsed as a group
+    memo: Dict[
+        tuple[Expr, bool],
+        tuple[Expr, set[Expr], set[Expr]],
+    ] = {}
     stack: list[str] = []
     skip_needed = False
     if needed_features is None:
         skip_needed = True
 
     def recurse(expr: Expr, add_name_to_needed: bool = True) -> Expr:
-        if expr in memo:
-            return memo[expr]
+        memo_key = (expr, add_name_to_needed)
+        if memo_key in memo:
+            return memo[memo_key]
 
         entries, exits = None, None
 
-        if isinstance(expr, Name):
+        # We first check if it is an Alias to extract out
+        if isinstance(expr, Alias):
             name = expr.value
-            if name in definitions:
-                if name in stack:
-                    raise RuleError(f"Cycle detected: {' -> '.join(stack + [name])}")
-                stack.append(name)
-                out, _, _ = recurse(definitions[name])
-                stack.pop()
-            else:
-                out = expr
-                # This will slightly
-                if add_name_to_needed and not skip_needed:
-                    needed_features.add(name.upper())
+            if name not in definitions:
+                raise RuleError(f"Undefined alias: @{name}")
+            if name in stack:
+                raise RuleError(f"Cycle detected: {' -> '.join(stack + [name])}")
+            stack.append(name)
+            out, entries, exits = recurse(
+                definitions[name],
+                add_name_to_needed=add_name_to_needed,
+            )
+            stack.pop()
+        elif isinstance(expr, Name):
+            name = expr.value
+            out = expr
+            # This will slightly
+            if add_name_to_needed and not skip_needed:
+                needed_features.add(name.upper())
             entries, exits = {expr}, {expr}
         elif isinstance(expr, (Number, String)):
             out = expr
@@ -594,7 +632,7 @@ def expand_macros(
             for i, arg in enumerate(args):
                 if fn in {"at_least"}:
                     add_name = i == 2
-                if fn == "percent":
+                elif fn == "percent":
                     add_name = 1 == i
                 elif fn == "not":
                     add_name = 0 == i
@@ -635,7 +673,7 @@ def expand_macros(
             print(expr)
             raise
         ret = out, entries or set(), exits or set()
-        memo[expr] = ret
+        memo[memo_key] = ret
         return ret
 
     return recurse(expr)[0]
@@ -665,7 +703,18 @@ def prepare_present_map_df(
             explode_col = ID_EXPR_DICT["DEFAULT"](col).alias(col)
         else:
             explode_col = ID_EXPR_DICT[col].alias(col)
-        df = df.with_columns(explode_col).explode(col)
+        df = (
+            df.with_columns(explode_col)
+            .explode(col)
+            .with_columns(pl.col(col).str.to_uppercase())
+        )
+
+    for col in COMPUTED_COLUMNS:
+        try:
+            df = df.with_columns(COMPUTED_COLUMNS[col].alias(col))
+            besthit_cols.append(col)
+        except pl.exceptions.ColumnNotFoundError:
+            pass
 
     # unpivot to long (sample, hit)
     hit_col = "hit"
@@ -744,6 +793,11 @@ class Evaluator:
     @functools.cache
     def eval_bool(self, expr: Expr, reduce_outer_and=True) -> np.ndarray:
         out = None
+        if isinstance(expr, Alias):
+            raise RuleError(
+                "Alias was not resolved properly in parsing. Please file a github bug report."
+            )
+
         if isinstance(expr, Name):
             out = self.present_map.get(expr.value.upper(), self._all_false)
 
@@ -1062,6 +1116,15 @@ class Evaluator:
         return df
 
 
+def should_include(options: dict, available_columns: set[str]) -> bool:
+    condition = options.get("include_when", {})
+
+    present = set(condition.get("all_columns_present", []))
+    absent = set(condition.get("all_columns_absent", []))
+
+    return present <= available_columns and absent.isdisjoint(available_columns)
+
+
 def evaluate_rules(
     compiled: CompiledRules,
     samples: List[str],
@@ -1127,6 +1190,15 @@ def evaluate_cycles(
             if rn is None:
                 continue
             # for rn, expr in compiled.rules.items():
+
+            if "rule_options" in frame.columns:
+                rule_options = (
+                    frame.filter(pl.col(label_col) == rn).item(0, "rule_options")
+                    or "{}"
+                )
+                if not should_include(json.loads(rule_options), set(frame.columns)):
+                    continue
+
             expr = compiled.rules[rn]
             out = ev.eval_bool(expr)
             if isinstance(out, np.ndarray):

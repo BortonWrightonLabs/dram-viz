@@ -152,31 +152,31 @@ Type III Secretion System	TypeIIISecretionSystem	[K03219 | K03222 | K03224 | K03
 Type VI Secretion System	TypeVISecretionSystem	K11903 | K11904	Pathogenesis & Virulence	Secretion systems	Type VI secretion system capacity via Hcp tube proteins or VgrG spike proteins.	K11903, K11904
 IgA Protease	IgAProtease	K01347	Pathogenesis & Virulence	Immune Evasion	IgA1 protease (K01347) cleaves human immunoglobulin IgA1 at the hinge region, inactivating mucosal antibody defense. Produced by Neisseria, Haemophilus, and Streptococcus pneumoniae as a major immune evasion strategy in mucosal pathogens. In the gut, IgA protease activity can disrupt the secretory IgA coat that normally excludes commensal and pathogenic bacteria from the epithelium.	K01347
 Toxins	Toxins	K11014 | K26579 | K19297 | K19298 | K06189 | K11028 | K11005 | K11032 | K11038 | [K10928 & K10929] | K16883 | K16884 | K11006 | K11007	Pathogenesis & Virulence	Toxins	Covers genotoxins (CDT K11014, colibactin K26579), pore-forming/hemolysins (K06189, K11005, K11032, K11038), ER stress (subtilase K19297/K19298), vacuolating (VacA K11028), heat-labile enterotoxin complex (K10928+K10929), heat-stable enterotoxin (K16883/K16884), Shiga toxin (K11006/K11007)	K11014, K26579, K19297, K19298, K06189, K11028, K11005, K11032, K11038, K10928, K10929, K16883, K16884, K11006, K11007
-	ReactionCore	K02703 | K02706 | K02689 | K02690 | K08928 | K08929 | K08940	Toxins	Toxins		
-	PigmentBioSyn	at_least(2, PRESENCE, [K04036,K04037,K04038,K03403,K03404,K03405,K03406,K04035,K04040])	Toxins	Toxins		
-	ETC60	percent60ComplexIA | percent60ComplexIB | percent60ComplexIC	Toxins	Toxins		
-	ETC50	percent50ComplexIA | percent50ComplexIB | percent50ComplexIC	Toxins	Toxins		
-	percent50ComplexIA	percent(50,ComplexIA)	Toxins	Toxins		
-	percent50ComplexIB	percent(50,ComplexIB)	Toxins	Toxins		
-	percent50ComplexIC	percent(50,ComplexIC)	Toxins	Toxins		
-	percent60ComplexIA	percent(60,ComplexIA)	Toxins	Toxins		
-	percent60ComplexIB	percent(60,ComplexIB)	Toxins	Toxins		
-	percent60ComplexIC	percent(60,ComplexIC)	Toxins	Toxins		
-	ComplexIA	K00330,[K00331 & K00332 & [K00333 | K00331] & [K13378 | K13380]],K00334,K00335,K00336,K00337,K00338,K00339,K00340,[[K00341 & K00342] | K15863],K00343	Toxins	Toxins		
-	ComplexIB	K05574,K05582,K05581,K05579,K05572,K05580,K05578,K05576,K05577,K05575,K05573,K05583,K05584,K05585	Toxins	Toxins		
-	ComplexIC	K03945,K03946,K03947,K03948,K03949,K03950,K03951,K03952,K03953,K03954,K03955,K03956,K11352,K11353	Toxins	Toxins		
-	CytochromeCOxidase	K02275 | K02274 | K02276 | K15408 | K02277	Toxins	Toxins		
-	CytochromeAa3600MenaquinolOxidase	K02827 | K02826 | K02828 | K02829	Toxins	Toxins		
-	CytochromeOUbiquinolOxidase	AR	Toxins	Toxins		
-	Cyc2	at_least(3, COUNTS, [Cyc2_repCluster1, Cyc2_repCluster2, Cyc2_repCluster3])	Toxins	Toxins		
-	PioA	PlaceHolder	Toxins	Toxins		
-	foxEYZ	FoxE & FoxY & FoxZ	Toxins	Toxins		
-	mtoAB	MtoA & MtoB 	Toxins	Toxins		
-	percent50CytochromeBDUbiquinolOxidase	percent(50,CytochromeBDUbiquinolOxidase)	Toxins	Toxins		
-	percent50CytochromeCOxidaseCBB3	percent(50,CytochromeCOxidaseCBB3)	Toxins	Toxins		
-	CytochromeBDUbiquinolOxidase	K00425,K00426,K00424 | K22501	Toxins	Toxins		
-	CytochromeCOxidaseCBB3	K00404 | K00405 | K15862,K00407,K00406	Toxins	Toxins		
-	NotNarNapNrf	not(NarNapNrf)	Toxins	Toxins		
-	NarNapNrf	NarNitrateReductase | NapNitrateReductase | NRF	Toxins	Toxins		
-	NapNitrateReductase	K00374 | K02567 | K02568 |  EC:1.9.6.1	Toxins	Toxins		 
-	NarNitrateReductase	NarG	Toxins	Toxins		
+	ReactionCore	K02703 | K02706 | K02689 | K02690 | K08928 | K08929 | K08940	Toxins	Toxins
+	PigmentBioSyn	at_least(2, PRESENCE, [K04036,K04037,K04038,K03403,K03404,K03405,K03406,K04035,K04040])	Toxins	Toxins
+	ETC60	percent60ComplexIA | percent60ComplexIB | percent60ComplexIC	Toxins	Toxins
+	ETC50	percent50ComplexIA | percent50ComplexIB | percent50ComplexIC	Toxins	Toxins
+	percent50ComplexIA	percent(50,ComplexIA)	Toxins	Toxins
+	percent50ComplexIB	percent(50,ComplexIB)	Toxins	Toxins
+	percent50ComplexIC	percent(50,ComplexIC)	Toxins	Toxins
+	percent60ComplexIA	percent(60,ComplexIA)	Toxins	Toxins
+	percent60ComplexIB	percent(60,ComplexIB)	Toxins	Toxins
+	percent60ComplexIC	percent(60,ComplexIC)	Toxins	Toxins
+	ComplexIA	K00330,[K00331 & K00332 & [K00333 | K00331] & [K13378 | K13380]],K00334,K00335,K00336,K00337,K00338,K00339,K00340,[[K00341 & K00342] | K15863],K00343	Toxins	Toxins
+	ComplexIB	K05574,K05582,K05581,K05579,K05572,K05580,K05578,K05576,K05577,K05575,K05573,K05583,K05584,K05585	Toxins	Toxins
+	ComplexIC	K03945,K03946,K03947,K03948,K03949,K03950,K03951,K03952,K03953,K03954,K03955,K03956,K11352,K11353	Toxins	Toxins
+	CytochromeCOxidase	K02275 | K02274 | K02276 | K15408 | K02277	Toxins	Toxins
+	CytochromeAa3600MenaquinolOxidase	K02827 | K02826 | K02828 | K02829	Toxins	Toxins
+	CytochromeOUbiquinolOxidase	AR	Toxins	Toxins
+	Cyc2	at_least(3, COUNTS, [Cyc2_repCluster1, Cyc2_repCluster2, Cyc2_repCluster3])	Toxins	Toxins
+	PioA	PlaceHolder	Toxins	Toxins
+	foxEYZ	FoxE & FoxY & FoxZ	Toxins	Toxins
+	mtoAB	MtoA & MtoB 	Toxins	Toxins
+	percent50CytochromeBDUbiquinolOxidase	percent(50,CytochromeBDUbiquinolOxidase)	Toxins	Toxins
+	percent50CytochromeCOxidaseCBB3	percent(50,CytochromeCOxidaseCBB3)	Toxins	Toxins
+	CytochromeBDUbiquinolOxidase	K00425,K00426,K00424 | K22501	Toxins	Toxins
+	CytochromeCOxidaseCBB3	K00404 | K00405 | K15862,K00407,K00406	Toxins	Toxins
+	NotNarNapNrf	not(NarNapNrf)	Toxins	Toxins
+	NarNapNrf	NarNitrateReductase | NapNitrateReductase | NRF	Toxins	Toxins
+	NapNitrateReductase	K00374 | K02567 | K02568 |  EC:1.9.6.1	Toxins	Toxins
+	NarNitrateReductase	NarG	Toxins	Toxins

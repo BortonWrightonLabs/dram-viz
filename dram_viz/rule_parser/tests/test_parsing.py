@@ -6,6 +6,7 @@ from dram_viz.rule_parser.src.rules import (
     And,
     Call,
     CompiledRules,
+    ID_EXPR_DICT,
     Name,
     Or,
     PipeChain,
@@ -48,12 +49,12 @@ BASIC_PARSE = {
         parts=(
             Or(
                 parts=(
-                    Name(value="K00399", db=None),
-                    Name(value="K00400", db=None),
-                    Name(value="K00401", db=None),
-                    Name(value="K00402", db=None),
-                    Name(value="K03421", db=None),
-                    Name(value="K03422", db=None),
+                    Name(value="K00399", qualifier=None),
+                    Name(value="K00400", qualifier=None),
+                    Name(value="K00401", qualifier=None),
+                    Name(value="K00402", qualifier=None),
+                    Name(value="K03421", qualifier=None),
+                    Name(value="K03422", qualifier=None),
                 )
             ),
             Call(
@@ -61,9 +62,9 @@ BASIC_PARSE = {
                 args=(
                     Or(
                         parts=(
-                            Name(value="K02591", db=None),
-                            Name(value="K02586", db=None),
-                            Name(value="K02588", db=None),
+                            Name(value="K02591", qualifier=None),
+                            Name(value="K02586", qualifier=None),
+                            Name(value="K02588", qualifier=None),
                         )
                     ),
                 ),
@@ -77,12 +78,12 @@ COMPOUND_PARSE = {
         parts=(
             Or(
                 parts=(
-                    Name(value="K00399", db=None),
-                    Name(value="K00400", db=None),
-                    Name(value="K00401", db=None),
-                    Name(value="K00402", db=None),
-                    Name(value="K03421", db=None),
-                    Name(value="K03422", db=None),
+                    Name(value="K00399", qualifier=None),
+                    Name(value="K00400", qualifier=None),
+                    Name(value="K00401", qualifier=None),
+                    Name(value="K00402", qualifier=None),
+                    Name(value="K03421", qualifier=None),
+                    Name(value="K03422", qualifier=None),
                 )
             ),
             Call(
@@ -90,9 +91,9 @@ COMPOUND_PARSE = {
                 args=(
                     Or(
                         parts=(
-                            Name(value="K02591", db=None),
-                            Name(value="K02586", db=None),
-                            Name(value="K02588", db=None),
+                            Name(value="K02591", qualifier=None),
+                            Name(value="K02586", qualifier=None),
+                            Name(value="K02588", qualifier=None),
                         )
                     ),
                 ),
@@ -104,42 +105,42 @@ COMPOUND_PARSE = {
             Call(
                 value="percent",
                 args=(
-                    Name(value="50", db=None),
+                    Name(value="50", qualifier=None),
                     Steps(
                         parts=(
-                            Name(value="K00399", db=None),
+                            Name(value="K00399", qualifier=None),
                             And(
                                 parts=(
-                                    Name(value="K00401", db=None),
-                                    Name(value="K00402", db=None),
+                                    Name(value="K00401", qualifier=None),
+                                    Name(value="K00402", qualifier=None),
                                     Or(
                                         parts=(
-                                            Name(value="K00333", db=None),
-                                            Name(value="K03421", db=None),
+                                            Name(value="K00333", qualifier=None),
+                                            Name(value="K03421", qualifier=None),
                                         )
                                     ),
                                     Or(
                                         parts=(
-                                            Name(value="K03422", db=None),
-                                            Name(value="K13380", db=None),
+                                            Name(value="K03422", qualifier=None),
+                                            Name(value="K13380", qualifier=None),
                                         )
                                     ),
                                 )
                             ),
-                            Name(value="K00400", db=None),
-                            Name(value="K00401", db=None),
-                            Name(value="K00402", db=None),
-                            Name(value="K03421", db=None),
-                            Name(value="K03422", db=None),
+                            Name(value="K00400", qualifier=None),
+                            Name(value="K00401", qualifier=None),
+                            Name(value="K00402", qualifier=None),
+                            Name(value="K03421", qualifier=None),
+                            Name(value="K03422", qualifier=None),
                         )
                     ),
                 ),
             ),
             Or(
                 parts=(
-                    Name(value="K02591", db=None),
-                    Name(value="K02586", db=None),
-                    Name(value="K02588", db=None),
+                    Name(value="K02591", qualifier=None),
+                    Name(value="K02586", qualifier=None),
+                    Name(value="K02588", qualifier=None),
                 )
             ),
         )
@@ -152,7 +153,7 @@ COMPOUND_PARSE = {
                     Call(
                         value="filter_contains",
                         args=(
-                            Name(value="kegg_description", db=None),
+                            Name(value="kegg_description", qualifier=None),
                             String(value="nitrate reductase"),
                         ),
                     ),
@@ -161,11 +162,11 @@ COMPOUND_PARSE = {
             Call(
                 value="column_count_values",
                 args=(
-                    Name(value="heme_regulatory_motif_count", db=None),
-                    Name(value="ge", db=None),
-                    Name(value="2", db=None),
-                    Name(value="ge", db=None),
-                    Name(value="2", db=None),
+                    Name(value="heme_regulatory_motif_count", qualifier=None),
+                    Name(value="ge", qualifier=None),
+                    Name(value="2", qualifier=None),
+                    Name(value="ge", qualifier=None),
+                    Name(value="2", qualifier=None),
                 ),
             ),
         )
@@ -173,17 +174,35 @@ COMPOUND_PARSE = {
     "D": Call(
         value="percent",
         args=(
-            Name(value="50", db=None),
+            Name(value="50", qualifier=None),
             Steps(
                 parts=(
-                    Name(value="K00399", db=None),
-                    Name(value="K14126", db=None),
-                    Name(value="K02588", db=None),
+                    Name(value="K00399", qualifier=None),
+                    Name(value="K14126", qualifier=None),
+                    Name(value="K02588", qualifier=None),
                 )
             ),
         ),
     ),
 }
+
+
+def test_dbcan_sub_ec_parsing():
+    annotations = pl.DataFrame(
+        {
+            "dbcan_sub_ec": [
+                "2.4.1.25:4;3.2.1.68:75;3.2.1.-:1",
+                "1.2.3.4:2",
+            ]
+        }
+    )
+
+    parsed = annotations.select(ID_EXPR_DICT["dbcan_sub_ec"]).to_series().to_list()
+
+    assert parsed == [
+        ["EC:2.4.1.25", "EC:3.2.1.68", "EC:3.2.1.-"],
+        ["EC:1.2.3.4"],
+    ]
 
 
 def test_basic_compiled_rules():

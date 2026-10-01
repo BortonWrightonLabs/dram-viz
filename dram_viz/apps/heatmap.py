@@ -176,7 +176,7 @@ class Dashboard(pn.viewable.Viewer):
         dfs: dict[str, dict[str, pd.DataFrame]],
         taxanomy_tree_data: Optional[pd.DataFrame] = None,
         selected_tax_tree: Optional[list[str]] = None,
-        output_dir: str | Path = None
+        output_dir: str | Path = None,
     ):
         super().__init__()
         self.dfs = dfs
@@ -235,10 +235,15 @@ class Dashboard(pn.viewable.Viewer):
                     column_options[k].append(col)
                     break
 
-
-        self.column_options = pn.widgets.NestedSelect(name="Y and C columns", options=column_options, levels=["Y Column", "Color Column"])
+        self.column_options = pn.widgets.NestedSelect(
+            name="Y and C columns",
+            options=column_options,
+            levels=["Y Column", "Color Column"],
+        )
         # self.c_col = pn.widgets.MultiChoice(name="Color Column", options=sort_options["genome"])
-        self.sort_by = pn.widgets.MultiChoice(name="Sort By", options=sort_options[self.y_col])
+        self.sort_by = pn.widgets.MultiChoice(
+            name="Sort By", options=sort_options[self.y_col]
+        )
 
         self._init_view()
         self.download_heatmap()
@@ -274,16 +279,16 @@ class Dashboard(pn.viewable.Viewer):
                 pn.Row(self.redraw_button, self.reset_button),
                 self.download_button,
                 pn.Row(self.column_options),
-                #self.sort_by,
+                # self.sort_by,
                 self.param.min_coverage,
                 *additional_sidebar,
             ],
         )
-    
+
     @property
     def y_col(self):
         return self.column_options.value["Y Column"]
-    
+
     @y_col.setter
     def y_col(self, value):
         self.column_options.value["Y Column"] = value
@@ -327,11 +332,10 @@ class Dashboard(pn.viewable.Viewer):
                 else:
                     raise ValueError(f"No coverage column found in {group} dataframe")
             elif "abundance" in c_mode:
-                    c_col = c_mode
-                    kw["c_max"] = df[c_col].max()
-                    if kw["c_max"] == 0:
-                        kw["c_max"] = 1
-
+                c_col = c_mode
+                kw["c_max"] = df[c_col].max()
+                if kw["c_max"] == 0:
+                    kw["c_max"] = 1
 
             df = self.filter_by_taxonomy(df)
             df = self.get_sorted_dfs(df, by=self.sort_by.value)
@@ -417,4 +421,8 @@ class Dashboard(pn.viewable.Viewer):
         Save the heatmap to a file
         """
         output_dir = output_dir or self._output_dir
-        self.plot_view.save(output_dir / f'product_{self.y_col.replace("/", "-")}_{self.color_col.replace("/", "-")}.html', resources=INLINE)
+        self.plot_view.save(
+            output_dir
+            / f"heatmap_{self.y_col.replace('/', '-')}_{self.color_col.replace('/', '_')}.html",
+            resources=INLINE,
+        )

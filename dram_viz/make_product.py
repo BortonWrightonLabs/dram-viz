@@ -38,7 +38,7 @@ from dram_viz.rule_parser.src.rules import (
     CompiledRules,
     build_present_map,
     evaluate_cycles,
-    prepare_present_map_df
+    prepare_present_map_df,
 )
 
 logger = logging.getLogger("dram.viz")
@@ -92,25 +92,26 @@ def join_present_map_df_to_mapping_df(
     besthit_cols: list[str],
     needed_features: set[str],
     additional_cols: list[str] = None,
-    mapping_df: pl.DataFrame = None
+    mapping_df: pl.DataFrame = None,
 ):
 
-    sample_names = [col for col in mapping_df.columns if col not in [count_col, group_col]]
+    sample_names = [
+        col for col in mapping_df.columns if col not in [count_col, group_col]
+    ]
     hit_col = "hit"
     df = (  # Here we join mapping_df to df, to get the mean value accross all samples
-        df
-        .join(mapping_df, on=count_col)
+        df.join(mapping_df, on=count_col)
         .with_columns(mean_sample_abundance=pl.mean_horizontal(sample_names))
         .select([count_col, group_col, hit_col, "mean_sample_abundance"])
     )
-    
+
     mapping_df = (
-        # (inner) join anno df to unpivotted mapping df to get `query_id, genome, hit, sample` 
-        # to link sample and query_id in mapping file to specific hits in anno file. 
+        # (inner) join anno df to unpivotted mapping df to get `query_id, genome, hit, sample`
+        # to link sample and query_id in mapping file to specific hits in anno file.
         # anno file should already be filtered to anno needed features, so this should be pretty small
         df.select([count_col, group_col, hit_col]).join(
             (
-                # unpivot mapping df to get `count_col, sample, sample_abundance` as a long table of all nonnull nonzero abundances 
+                # unpivot mapping df to get `count_col, sample, sample_abundance` as a long table of all nonnull nonzero abundances
                 # we consider the sample_abundance the abundance of a specific sample for a specific count_col, which
                 # we will match later by hit from the anno df
                 mapping_df.unpivot(
@@ -118,15 +119,18 @@ def join_present_map_df_to_mapping_df(
                     on=sample_names,
                     variable_name="sample",
                     value_name="sample_abundance",
+                ).filter(
+                    pl.col("sample_abundance").is_not_null()
+                    & (pl.col("sample_abundance") != 0)
                 )
-                .filter(pl.col("sample_abundance").is_not_null() & (pl.col("sample_abundance") != 0))
-            ), 
-            on=count_col, 
-            how="inner", 
-            #validate="1:m"
+            ),
+            on=count_col,
+            how="inner",
+            # validate="1:m"
         )
     )
     return df, mapping_df, sample_names
+
 
 @click.command()
 @click.option("--annotations", "-a", type=Path, help="Path to the annotations tsv file")
@@ -228,6 +232,7 @@ def main(
     Make a product heatmap visualization from the DRAM output.
     """
     import time
+
     s = time.time()
     if rules_system and rules_tsv:
         raise click.BadArgumentUsage(
@@ -283,14 +288,16 @@ def main(
         alias_col=alias_column,
         rules_col="rule",
         allow_visualize_functions=True,
-        common_rules_path=common_rules_tsv
+        common_rules_path=common_rules_tsv,
     )
     # kw = dict(rules_path=rules_path, label_col="module", parent_col=alias_column, rules_col="rule")
     compiled = CompiledRules.from_rules(**kw)
     logger.info(f"Compiled rules in {time.time() - s} seconds")
 
-    sample_names = raw_anno.select("genome").unique().sort("genome").to_series().to_list()
-    besthit_cols=list(ID_EXPR_DICT.keys())
+    sample_names = (
+        raw_anno.select("genome").unique().sort("genome").to_series().to_list()
+    )
+    besthit_cols = list(ID_EXPR_DICT.keys())
     dfs = {}
     eval_cycles_kw = {}
     if mapping:
@@ -300,27 +307,40 @@ def main(
         # This renames the first column to query_id regardless of initial form (Genome, GeneId, reference, etc.)
         # It then drops known additional meta columns that could be there depending on the format
         # finally does a catch all of keeping only the label column and all floats (sample columns) as a backup
-        mapping_df = (mapping_df
-                      .rename({mapping_df.columns[0]: "query_id"})
-                      .drop(["Chr", "Start", "End", "Strand", "Length", "KO", "Description"], strict=False)
-                      .select(pl.col("query_id"), cs.numeric()))
+        mapping_df = (
+            mapping_df.rename({mapping_df.columns[0]: "query_id"})
+            .drop(
+                ["Chr", "Start", "End", "Strand", "Length", "KO", "Description"],
+                strict=False,
+            )
+            .select(pl.col("query_id"), cs.numeric())
+        )
         # if mapping_df col 0 maps to anno query_id col
-        if mapping_df.select(pl.col("query_id").is_in(raw_anno.select(pl.col("query_id")).to_series()).all()).item():
+        if mapping_df.select(
+            pl.col("query_id")
+            .is_in(raw_anno.select(pl.col("query_id")).to_series())
+            .all()
+        ).item():
             mapping_df = mapping_df.join(
                 raw_anno.select(["query_id", "genome"]).unique(),
                 on="query_id",
-                validate="1:1"
-            )        
+                validate="1:1",
+            )
         # if mapping_df col 0 maps to anno input_fasta/genome col
-        elif mapping_df.select(pl.col("query_id").is_in(raw_anno.select(pl.col("genome")).to_series()).all()).item():
+        elif mapping_df.select(
+            pl.col("query_id")
+            .is_in(raw_anno.select(pl.col("genome")).to_series())
+            .all()
+        ).item():
             mapping_df = mapping_df.rename({"query_id": "genome"}).join(
                 raw_anno.select(["query_id", "genome"]).unique(),
                 on="genome",
-                validate="1:m"
-            )        
+                validate="1:m",
+            )
         else:
-            raise ValueError("First Column in Mapping file can't be mapped to raw annotation file either to query_id column (gene level) or input_fasta (fasta file name, stand in for genome)")
-
+            raise ValueError(
+                "First Column in Mapping file can't be mapped to raw annotation file either to query_id column (gene level) or input_fasta (fasta file name, stand in for genome)"
+            )
 
         anno_df = prepare_present_map_df(
             df=raw_anno,
@@ -335,14 +355,14 @@ def main(
             count_col="query_id",
             besthit_cols=besthit_cols,
             needed_features=compiled.needed_features,
-            mapping_df=mapping_df
+            mapping_df=mapping_df,
         )
 
         present_map = build_present_map(
             df=mapping_df,
             sample_col="sample",
             needed_features=compiled.needed_features,
-            sample_names=sample_names_mapping
+            sample_names=sample_names_mapping,
         )
         dfs["sample"] = evaluate_cycles(
             compiled=compiled,
@@ -350,10 +370,10 @@ def main(
             present_map=present_map,
             annotations=raw_anno,
             sample_col="sample",
-            #additional_cols=["long_name"],
+            # additional_cols=["long_name"],
             group_col=group_colunm,
             anno_df=mapping_df,
-            value_col="sample_abundance"
+            value_col="sample_abundance",
         )
         eval_cycles_kw["anno_df"] = anno_df
         eval_cycles_kw["value_col"] = "mean_sample_abundance"
@@ -370,7 +390,7 @@ def main(
         df=anno_df,
         sample_col="genome",
         needed_features=compiled.needed_features,
-        sample_names=sample_names
+        sample_names=sample_names,
     )
 
     logger.info(f"Built present map in {time.time() - s} seconds")
@@ -383,7 +403,7 @@ def main(
         sample_col="genome",
         additional_cols=["long_name"],
         group_col=group_colunm,
-        **eval_cycles_kw
+        **eval_cycles_kw,
     )
     logger.info("Evaluated all rules in:")
     logger.info(time.time() - s)
@@ -422,7 +442,16 @@ def main(
 
     if save_dataframes:
         for df_type, dfs_dict in dfs.items():
-            df = pl.concat([d for key, d in dfs_dict.items() if key != "Meta"], how="diagonal_relaxed")
+            df = pl.concat(
+                [d for key, d in dfs_dict.items() if key != "Meta"],
+                how="diagonal_relaxed",
+            )
+            try:
+                df = df.select(["genome", pl.all().exclude("genome")])
+            except (
+                pl.exceptions.ColumnNotFoundError
+            ):  # not sure genome will always be what the df's "index" is.
+                pass
             df.write_csv(output_dir / f"df_{df_type}.tsv", separator="\t")
             logger.info(f"Saved dataframe to {output_dir / f'df_{df_type}.tsv'}")
 
@@ -430,7 +459,7 @@ def main(
         dfs=dfs,
         taxanomy_tree_data=tax_tree_data,
         selected_tax_tree=selected_tax_tree,
-        output_dir=output_dir
+        output_dir=output_dir,
         # mapping=bool(mapping),
     )
     logger.info(

@@ -499,6 +499,8 @@ def load_rules(
     lf = lf.with_columns(pl.col(pl.String).replace("", None))
 
     if not has_alias_col:
+        if not alias_col:
+            alias_col = "alias"
         lf = lf.with_columns(pl.col(label_col).str.replace(" ", "").alias(alias_col))
 
     if clf is not None:

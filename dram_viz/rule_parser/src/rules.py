@@ -414,7 +414,12 @@ def load_rules(
     )
     if rules_path:
         lf = (
-            pl.scan_csv(rules_path, separator="\t", infer_schema_length=None)
+            pl.scan_csv(
+                rules_path,
+                separator="\t",
+                infer_schema_length=None,
+                truncate_ragged_lines=True,
+            )
             .filter(~pl.all_horizontal(pl.all().is_null()))
             .fill_null("")
         )
@@ -423,7 +428,12 @@ def load_rules(
 
     if common_rules_path:
         clf = (
-            pl.scan_csv(common_rules_path, separator="\t", infer_schema_length=None)
+            pl.scan_csv(
+                common_rules_path,
+                separator="\t",
+                infer_schema_length=None,
+                truncate_ragged_lines=True,
+            )
             .filter(~pl.all_horizontal(pl.all().is_null()))
             .fill_null("")
         )
@@ -885,14 +895,20 @@ class Evaluator:
                     return self.not_(masks=kwargs["masks"])
                 return self.not_(self.eval_bool(args[0]))
             case "percent":
+                expr = args[1]
+                if isinstance(expr, Or):
+                    expr = Steps(parts=expr.parts)
                 return self.percent(
-                    _as_int(args[0]), self.eval_cycle(args[1], simplify=False)
+                    _as_int(args[0]), self.eval_cycle(expr, simplify=False)
                 )
             case "at_least":
+                expr = args[2]
+                if isinstance(expr, Or):
+                    expr = Steps(parts=expr.parts)
                 return self.at_least(
                     _as_int(args[0]),
                     _as_str(args[1]),
-                    self.eval_cycle(args[2], simplify=False),
+                    self.eval_cycle(expr, simplify=False),
                 )
             case "tax":
                 return self.tax(_as_str(args[0]), **kwargs)
@@ -1242,12 +1258,17 @@ def evaluate_cycles(
         assert all(isinstance(df, pl.DataFrame) for df in dfs[group]), (
             f"All rules in group {group} should evaluate to the same type, but got different types: {[type(df) for df in dfs[group]]}"
         )
-        df = pl.concat(dfs[group])
-        df = df.join(
-            compiled.df.select(pl.col(label_col), pl.col(group_col), *additional_cols),
-            on=label_col,
-        )
-        dfs[group] = df
+        if len(dfs[group]):
+            df = pl.concat(dfs[group])
+            df = df.join(
+                compiled.df.select(
+                    pl.col(label_col), pl.col(group_col), *additional_cols
+                ),
+                on=label_col,
+            )
+            dfs[group] = df
+        else:
+            del dfs[group]
 
     return dfs
 

@@ -147,7 +147,7 @@ name	alias	rule
 	cooS_acsA	K00198
 	AerobicCODH	K03518
 
-	HydrogenUse	"NiFe_group1 | NiFe_group2 | NiFe_group3 | NiFe_group4 | FeFe_GroupA | FeFe_GroupB | FeFe_GroupC | FeFe_GroupE | FeFe_GroupF "
+	HydrogenUse	"NiFe_group1 | NiFe_group2 | NiFe_group3 | NiFe_group4 | FeFe_groupA | FeFe_groupB | FeFe_groupC | FeFe_groupE | FeFe_groupF "
 
 	Fermenter	not(@NegativeForFermenter) &  [@Lactate-Final | @Ethanol | @Acetate-Final | @Butyrate-Final | @Propionate-Final] & [K00850 | K00873 | K01690 | K01625 | K00615 | K00616]
 	NegativeForFermenter	@ETC50 | @Methanogen | @Denitrifier | @Sulfatereducer | @AerobicAmmoniaOxidizer | @Aerobe | @Microaerophillic | @phototroph
@@ -209,7 +209,7 @@ name	alias	rule
 	nitrogen-fixer	[K02586 & K02591] | [K22896 & K22897]
 
 	IronReduction	@IronReductionGenes & @ETC50
-	IronReductionGenes	@mtrCAB | omcF | omcS | omcZ  | @ExtABCD
+	IronReductionGenes	@mtrCAB | OmcF | OmcS | OmcZ  | @ExtABCD
 	mtrCAB	MtrA & @mtoAB & MtrC_TIGR03507
 	ExtABCD	ExtA_pcc_cyt | ExtB_porin | ExtC_pcc_lp_cyt | ExtD_pcc_lp_cyt
 

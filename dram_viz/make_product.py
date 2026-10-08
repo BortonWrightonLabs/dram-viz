@@ -213,6 +213,14 @@ def join_present_map_df_to_mapping_df(
     show_default=True,
     default=False,
 )
+@click.option(
+    "--save_needed_features",
+    "-sf",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Save txt file of the gene_ids in your rules needed. Potentially useful for debugging.",
+)
 def main(
     annotations,
     fasta_column,
@@ -227,6 +235,7 @@ def main(
     group_colunm,
     port,
     save_dataframes,
+    save_needed_features,
 ):
     """
     Make a product heatmap visualization from the DRAM output.
@@ -454,6 +463,11 @@ def main(
                 pass
             df.write_csv(output_dir / f"df_{df_type}.tsv", separator="\t")
             logger.info(f"Saved dataframe to {output_dir / f'df_{df_type}.tsv'}")
+
+    if save_needed_features:
+        (output_dir / "needed_features.txt").write_text(
+            "\n".join(compiled.needed_features_raw)
+        )
 
     kw = dict(
         dfs=dfs,

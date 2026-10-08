@@ -48,9 +48,9 @@ pn.config.global_loading_spinner = True
 
 RULES_SYSTEMS = {
     "default": Path(__file__).parent / "data/rules.tsv",
-    "ag": Path(__file__).parent / "data/ag_rules.tsv",
+    "ag": Path(__file__).parent / "data/rules_ag.tsv",
     "bgc": Path(__file__).parent / "data/rules_bgc.tsv",
-    "marine": Path(__file__).parent / "data/rules_marine.tsv",
+    "aquatic": Path(__file__).parent / "data/rules_aquatic.tsv",
     "eng_sys": Path(__file__).parent / "data/rules_eng_sys.tsv",
     "gut": Path(__file__).parent / "data/rules_gut.tsv",
 }

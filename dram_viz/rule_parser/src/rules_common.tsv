@@ -149,7 +149,7 @@ name	alias	rule
 
 	HydrogenUse	"NiFe_group1 | NiFe_group2 | NiFe_group3 | NiFe_group4 | FeFe_GroupA | FeFe_GroupB | FeFe_GroupC | FeFe_GroupE | FeFe_GroupF "
 
-	Fermenter	not(@NegativeForFermenter) &  [@Lactate-Final | Ethanol | @Acetate-Final | @Butyrate-Final | @Propionate-Final] & [K00850 | K00873 | K01690 | K01625 | K00615 | K00616]
+	Fermenter	not(@NegativeForFermenter) &  [@Lactate-Final | @Ethanol | @Acetate-Final | @Butyrate-Final | @Propionate-Final] & [K00850 | K00873 | K01690 | K01625 | K00615 | K00616]
 	NegativeForFermenter	@ETC50 | @Methanogen | @Denitrifier | @Sulfatereducer | @AerobicAmmoniaOxidizer | @Aerobe | @Microaerophillic | @phototroph
 	Denitrifier	@ETC50 & [[@NarNitrateReductase | @NapNitrateReductase] | @NitriteReductase | @NitricOxideReductase | @NitrousOxideReductase]
 	NitrousOxideReductase	K00376 | EC:1.7.2.4
@@ -209,14 +209,14 @@ name	alias	rule
 	nitrogen-fixer	[K02586 & K02591] | [K22896 & K22897]
 
 	IronReduction	@IronReductionGenes & @ETC50
-	IronReductionGenes	@mtrCAB | omcF | omcS | omcZ | FmnA | @ExtABCD
-	mtrCAB	MtrA & MtrB_TIGR03509 & MtrC_TIGR03507
+	IronReductionGenes	@mtrCAB | omcF | omcS | omcZ  | @ExtABCD
+	mtrCAB	MtrA & @mtoAB & MtrC_TIGR03507
 	ExtABCD	ExtA_pcc_cyt | ExtB_porin | ExtC_pcc_lp_cyt | ExtD_pcc_lp_cyt
 
 	IronOxidation	[@Cyc2 |  @mtoAB | @foxEYZ ] & [@Microaerophillic | @Aerobe | @Sulfatereducer | @Denitrifier | @phototroph]
-	Cyc2	at_least(3, COUNTS, [Cyc2_repCluster1, Cyc2_repCluster2, Cyc2_repCluster3])
+	Cyc2	at_least(2, COUNTS, [Cyc2_repCluster1, Cyc2_repCluster2, Cyc2_repCluster3])
 	foxEYZ	FoxE & FoxY & FoxZ
-	mtoAB	MtoA & MtoB
+	mtoAB	MtrB_TIGR03509
 
 	Sulfatereducer	@DsrABtyper
 	DsrABtyper	K11180 | dsrA | dsrB | K11181
@@ -265,16 +265,16 @@ name	alias	rule
 	methylotroph	[[@McrAor3999 & at_least(1, PRESENCE, [K04480,K14083,K16176,K16178,K25220,K16954,K25600,K25916,K26847])] | [tax(g__Methanobacterium_B)|tax(g__Methanobacterium_D)|tax(g__Methanosarcina)|tax(g__Methanodesulfokora)|tax(g__Methanosphaera)|tax(o__Methanomethylicales)|tax(c__Methanonatronarchaeia)|tax(g__Methanolobus)|tax(g__Methanomethylovorans)|tax(g__Methanohalobium)|tax(g__Methanohalophilus)|tax(g__Methanosalsum)|tax(g__Methermicoccus)|tax(g__Methanococcoides)|tax(g__Methanolapillus)|tax(g__MTP4)|tax(g__Methanimicrococcus)|tax(g__Methanofrustulum)|tax(o__Methanofastidiosales)|tax(o__Methanomassiliicoccales)|tax(f__Methanonatronarchaeaceae)]] & not(@McrAor3999 & [tax(g__Methanocomedens_A)|tax(g__Methanocomedens_B)|tax(g__Methanogaster_A)|tax(g__Methanogaster_B)|tax(g__Methanoperedens_A)|tax(g__Methanoperedens)|tax(g__ANME-1-THS)|tax(g__ANME1a)|tax(g__G60ANME1)|tax(g__Methanophaga)|tax(g__Methanovorans)|tax(g__Methanomarinus)|tax(g__Methanoxibalbensis)|tax(g__Methanospirare)|tax(g__Kmv04)|tax(g__Methanogaster_C)|tax(g__Methanogaster_D)|tax(g__CAZCRM01)|tax(g__UBA10536)|tax(g__Methanoxibalbensis)])
 	mtxB	K04480| K14083 |K16176 | K16178 |K25220 | K16954
 
-	Methanotroph	@TRUEPmoA | @mmoX
+	AerobicMethanotroph	@TRUEPmoA | @mmoX
 	ProbablePmoA	K10944 | EC:1.14.18.3
 	TRUEPmoA	pmoa_alpha_1 | pmoa_alpha_2 | pmoa_crenothrix | pmoa_gamma | pmoa_methyl_eth | pmoa_methylomirabilis | pmoa_verr | pmoa_actinobacteria_chloroflexota
 	mmoX	K16157
 
 	anaerobic-methanotrophic-Archaea	@McrAor3999 & [tax(g__Methanocomedens_A)|tax(g__Methanocomedens_B)|tax(g__Methanogaster_A)|tax(g__Methanogaster_B)|tax(g__Methanoperedens_A)|tax(g__Methanoperedens)|tax(g__ANME-1-THS)|tax(g__ANME1a)|tax(g__G60ANME1)|tax(g__Methanophaga)|tax(g__Methanovorans)|tax(g__Methanomarinus)|tax(g__Methanoxibalbensis)|tax(g__Methanospirare)|tax(g__Kmv04)|tax(g__Methanogaster_C)|tax(g__Methanogaster_D)|tax(g__CAZCRM01)|tax(g__UBA10536)|tax(g__Methanoxibalbensis)]
 
-	NOxorRed	@ProbableNarNxr
+	NOxorRed	@ProbableNarNxr & not(@NitriteOxidoreductase) & not(@NarNitrateReductase)
 
-	AmmoniaMethaneOxidizer	@ProbableAmmoniaMonooxygenase | @ProbablePmoA
+	AmmoniaMethaneOxidizer	[@ProbableAmmoniaMonooxygenase | @ProbablePmoA] & not(@AerobicAmmoniaOxidizer) & not(@AerobicMethanotroph)
 
 	ProbIronReduction	[@notIronReductionGenes | @hemeCount] & @ETC50
 	notIronReductionGenes	not(@IronReductionGenes)
@@ -286,6 +286,7 @@ name	alias	rule
 	Cellulose	GH9;EC:3.2.1.74 | GH9;EC:3.2.1.4 | GH8;EC:3.2.1.4 | GH74;EC:3.2.1.4 | GH7;EC:3.2.1.73 | GH7;EC:3.2.1.4 | GH7;EC:3.2.1.176 | GH6;EC:3.2.1.91 | GH6;EC:3.2.1.73 | GH6;EC:3.2.1.4 | GH51;EC:3.2.1.91 | GH5;EC:3.2.1.91 | GH5;EC:3.2.1.74 | GH48;EC:3.2.1.91 | GH48;EC:3.2.1.4 | GH48;EC:3.2.1.176 | GH26;EC:3.2.1.4 | GH124;EC:3.2.1.4 | GH12;EC:3.2.1.4 | AA9;EC:1.14.99.56 | AA9;EC:1.14.99.54 | AA3;EC:1.1.99.18 | AA16;EC:1.14.99.54 | AA15;EC:1.14.99.54 | AA10;EC:1.14.99.56 | AA10;EC:1.14.99.54
 	Hemicellulose-Xylan	AA10;EC:1.14.99.- | AA14;EC:1.14.99.- | CE1;EC:3.1.1.72 | CE12;EC:3.1.1.72 | CE2;EC:3.1.1.72 | CE2;EC:3.1.1.- | CE2;EC:3.1.1.6 | CE3;EC:3.1.1.72 | CE4;EC:3.1.1.72 | CE4;EC:3.1.1.6 | CE5;EC:3.1.1.72 | CE6;EC:3.1.1.72 | CE7;EC:3.1.1.72 | CE7;EC:3.1.1.- | GH10;EC:2.4.2.- | GH10;EC:3.2.1.- | GH10;EC:3.2.1.32 | GH10;EC:3.2.1.8 | GH10;EC:3.2.1.156 | GH10;EC:3.2.1.37 | GH11;EC:3.2.1.37 | GH11;EC:3.2.1.8 | GH115;EC:3.2.1.131 | GH120;EC:3.2.1.37 | GH141;EC:3.2.1.8 | GH159;EC:3.2.1.55 | GH26;EC:3.2.1.- | GH26;EC:3.2.1.32 | GH3;EC:3.2.1.37 | GH3;EC:3.2.1.8 | GH3;EC:3.2.1.72 | GH30;EC:3.2.1.136 | GH30;EC:3.2.1.37 | GH30;EC:3.2.1.8 | GH30;EC:3.2.1.- | GH30;EC:3.2.1.156 | GH39;EC:3.2.1.37 | GH4;EC:3.2.1.139 | GH43;EC:3.2.1.72 | GH43;EC:3.2.1.37 | GH43;EC:3.2.1.55 | GH43;EC:3.2.1.8 | GH44;EC:3.2.1.8 |  GH5;EC:3.2.1.8 | GH5;EC:3.2.1.37 | GH51;EC:3.2.1.8 | GH51;EC:3.2.1.- | GH52;EC:3.2.1.37 | GH54;EC:3.2.1.37 | GH6;EC:3.2.1.8 | GH62;EC:3.2.1.8 | GH67;EC:3.2.1.131 | GH67;EC:3.2.1.139 | GH8;EC:3.2.1.156 | GH8;EC:3.2.1.8 | GH8;EC:3.2.1.32 | GH9;EC:3.2.1.8 | GH98;EC:3.2.1.8
 	Hemicellulose-Other	GH182;EC:3.2.1.146 | GH1;EC:3.2.1.46 | GH112;EC:2.4.1.- | GH147;EC:3.2.1.23 | GH16;EC:3.2.1.23 | GH2;EC:3.2.1.145 | GH3;EC:3.2.1.23 | GH30;EC:3.2.1.213 | GH35;EC:3.2.1.- | GH43;EC:3.2.1.146 | GH5;EC:3.2.1.23 | GH54;EC:3.2.1.23 | GH10;EC:3.2.1.4 | GH9;EC:3.2.1.151 | CE17;EC:3.1.1.- | GH113;EC:3.2.1.78 | GH113;EC:3.2.1.- | GH113;EC:3.2.1.25 | GH130;EC:2.4.1.- | GH130;EC:2.4.1.281 | GH130;EC:2.4.1.319 | GH130;EC:2.4.1.320 | GH130;EC:2.4.1.339 | GH130;EC:2.4.1.340 | GH130;EC:3.2.1.197 | GH134;EC:3.2.1.78 | GH148;EC:3.2.1.4 | GH26;EC:3.2.1.100 | GH26;EC:3.2.1.78 | GH27;EC:3.2.1.- | GH45;EC:3.2.1.- | GH5;EC:3.2.1.25 | GH5;EC:3.2.1.78 | CE20;EC:3.1.1.53 | CE20;EC:3.1.1.6 | CE3;EC:3.1.1.6 | GH12;EC:3.2.1.151 | GH16;EC:2.4.1.207 | GH16;EC:3.2.1.151 | GH26;EC:3.2.1.151 | GH3;EC:3.2.1.120 | GH31;EC:3.2.1.177 | GH44;EC:3.2.1.151 | GH45;EC:3.2.1.151 | GH5;EC:3.2.1.151 | GH5;EC:3.2.1.150 | GH74;EC:3.2.1.151
+	Hemicellulose	@Hemicellulose-Xylan | @Hemicellulose-Other
 	Pectin	GH93;EC:3.2.1.- | GH97;EC:3.2.1.88 | GH33;EC:3.2.1.- | AA17;EC:1.14.99.- | CE12;EC:3.1.1.86 | CE13;EC:3.1.1.- | CE19;EC:3.1.1.11 | CE8;EC:3.1.1.11 | GH105;EC:3.2.1.172 | GH106;EC:3.2.1.174 | GH106;EC:3.2.1.40 | GH137;EC:3.2.1.185 | GH138;EC:3.2.1.173 | GH139;EC:3.2.1.- | GH140;EC:3.2.1.- | GH141;EC:3.2.1.51 | GH142;EC:3.2.1.185 | GH143;EC:3.2.1.- | GH2;EC:3.2.1.- | GH28;EC:3.2.1.- | GH28;EC:3.2.1.15 | GH28;EC:3.2.1.171 | GH28;EC:3.2.1.173 | GH28;EC:3.2.1.67 | GH28;EC:3.2.1.82 | GH78;EC:3.2.1.174 | PL1;EC:4.2.2.10 | PL1;EC:4.2.2.2 | PL1;EC:4.2.2.9 | PL10;EC:4.2.2.2 | PL11;EC:4.2.2.23 | PL11;EC:4.2.2.24 | PL2;EC:4.2.2.2 | PL2;EC:4.2.2.9 | PL22;EC:4.2.2.6 | PL22;EC:4.2.2.9 | PL26;EC:4.2.2.24 | PL27;EC:4.2.2.28 | PL3;EC:4.2.2.2 | PL4;EC:4.2.2.23 | PL9;EC:4.2.2.2 | PL9;EC:4.2.2.23 | PL9;EC:4.2.2.9 | PL9;EC:4.2.2.10
 	Arabinogalactan	GH115;EC:3.2.1.- | GH127;EC:3.2.1.185 | GH147;EC:3.2.1.89 | GH154;EC:3.2.1.- | GH16;EC:3.2.1.181 | GH172;EC:3.2.1.- | GH183;EC:3.2.1.- | GH27;EC:3.2.1.88 | GH30;EC:3.2.1.164 | GH39;EC:3.2.1.215 | GH39;EC:3.2.1.- | GH42;EC:3.2.1.23 | GH43;EC:3.2.1.145 | GH5;EC:3.2.1.146 | GH5;EC:3.2.1.164 | GH53;EC:3.2.1.89 | GH79;EC:3.2.1.- | GH79;EC:3.2.1.31 | PL42;EC:4.2.2.28
 	Cutin	CE5;EC:3.1.1.74
@@ -332,3 +333,11 @@ name	alias	rule
 	Superoxide	K04564 | K04565
 	Peroxide-catalase	K03781 | K03782 | K05910 | K00432
 	Peroxide-peroxiredoxin	K03386
+
+	C-P-Lyase-Complex	at_least(3, PRESENCE, [K06166, K06165,  K06164,  K06163, K05781, K05780, K06162])
+	Organic-P-Mineralization	K07093 | K01077 | K09474 | K01078 | K03788
+	Phytase	K01093 | K01083
+	Inorganic-P-Solubilization	K01514 | K01507 | K06137 | K00117
+	High-affinity-Pi-uptake	K02040 & K02037 & K02038 & K02036
+
+	Urease	[K01428&K01429&K01430]

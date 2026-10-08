@@ -1,0 +1,116 @@
+name	rule	module	group	notes
+Plant Polymer Mixed	@PlantPolymerMixed	Carbon Processing	polymer
+Cellulose	@Cellulose	Carbon Processing	polymer
+Hemicellulose-Xylan	@Hemicellulose-Xylan	Carbon Processing	polymer
+Hemicellulose-Other	@Hemicellulose-Other	Carbon Processing	polymer	mannan/xyloglucan/galactan
+Pectin	@Pectin	Carbon Processing	polymer
+Arabinogalactan	@Arabinogalactan	Carbon Processing	polymer
+"Cutin "	@Cutin	Carbon Processing	polymer
+Fructan	@Fructan	Carbon Processing	polymer
+Starch Specific	@StarchSpecific	Carbon Processing	polymer
+Starch/Glycogen	@StarchGlycogen	Carbon Processing	polymer
+Chitin	@Chitin	Carbon Processing	polymer
+Microbially-derived	@Microbially-derived	Carbon Processing	polymer
+Cellulose-derived	@Cellulose-derived	Carbon Processing	oligomer
+Hemicellulose-derived xylan	@Hemicellulose-derived-xylan	Carbon Processing	oligomer
+Hemicellulose-derived other	@Hemicellulose-derived-other	Carbon Processing	oligomer
+Pectin-derived	@Pectin-derived	Carbon Processing	oligomer
+"Fructan-derived "	@Fructan-derived	Carbon Processing	oligomer
+Starch/Glycogen-derived	@Starch-Glycogen-derived	Carbon Processing	oligomer
+Chitin-derived	@Chitin-derived	Carbon Processing	oligomer
+Chitin / other-derived	@Chitin-other-derived	Carbon Processing	oligomer
+Other oligosaccharides	@Other-oligosaccharides	Carbon Processing	oligomer
+Cellobiose	@Cellobiose	Carbon Processing	disaccharide
+Maltose	@Maltose	Carbon Processing	disaccharide
+Sucrose	@Sucrose	Carbon Processing	disaccharide
+Trehalose	@Trehalose	Carbon Processing	disaccharide
+Lactose	@Lactose	Carbon Processing	disaccharide
+Xylan/Xylobiose	@XylanXylobiose	Carbon Processing	disaccharide
+Mannose/Mannobiose	@Mannose-Mannobiose	Carbon Processing	disaccharide
+Other disaccharides	@Other-disaccharides	Carbon Processing	disaccharide
+Glucose	@Glucose	Carbon Processing	monosaccharide
+Xylose	@Xylose	Carbon Processing	monosaccharide
+Arabinose	@Arabinose	Carbon Processing	monosaccharide
+Mannose	@Mannose	Carbon Processing	monosaccharide
+Galactose	@Galactose	Carbon Processing	monosaccharide
+Fructose	@Fructose	Carbon Processing	monosaccharide
+Rhamnose	@Rhamnose	Carbon Processing	monosaccharide
+N-Acetylglucosamine (Glc-NAc)	@N-Acetylglucosamine	Carbon Processing	monosaccharide
+Fucose	@Fucose	Carbon Processing	monosaccharide
+Acetate	@Acetate-Final	Carbon Processing	low-molecular-weight-carbon
+Butyrate	@Butyrate-Final	Carbon Processing	low-molecular-weight-carbon
+Propionate	@Propionate-Final	Carbon Processing	low-molecular-weight-carbon
+Ethanol/Alcohol	@Ethanol	Carbon Processing	low-molecular-weight-carbon
+Methanol	@Methanol	Carbon Processing	low-molecular-weight-carbon
+CO2 Fixation	@CO2fixation	C1 Metabolism	C1 Metabolism
+"CH4 Oxidation Aerobic "	@TRUEPmoA	C1 Metabolism	C1 Metabolism
+CH4 Production or Anaerobic Oxidation	@Methanogen	C1 Metabolism	C1 Metabolism
+"CO Metabolism "	"@carboxydotroph "	C1 Metabolism	C1 Metabolism
+N2 Fixation	@nitrogen-fixer	Inorganic Nitrogen Transformation	N2 fixation
+Aerobic Ammonium Oxidation	@AerobicAmmoniaOxidizer	Inorganic Nitrogen Transformation	Nitrification
+Aerobic Nitrite Oxidation	@NitriteOxidoreductase	Inorganic Nitrogen Transformation	Nitrification
+Comammox	@Comammox		Nitrification
+Anaerobic Ammonium Oxidation	"@Annamox "	Inorganic Nitrogen Transformation	Nitrification
+NO3 To NO2	@NarNitrateReductase|[@NapNitrateReductase]	Inorganic Nitrogen Transformation	N Reduction
+NO2 To NO	@NitriteReductase	Inorganic Nitrogen Transformation	N Reduction
+NO To N2O	@NitricOxideReductase	Inorganic Nitrogen Transformation	N Reduction
+N2O To N2	@NitrousOxideReductase	Inorganic Nitrogen Transformation	N Reduction
+DNRA full, NO3 To NH4	@DNRA	Inorganic Nitrogen Transformation	N Reduction
+DNRA partial, NO2 To NH4 (NrfA only)	@nrfA	Inorganic Nitrogen Transformation	N Reduction
+NO3 To NH4 with NirBD (no NrfA)	[@NarNitrateReductase|@NapNitrateReductase] & [K00362 & K00363]	Inorganic Nitrogen Transformation	N Reduction
+Extracellular Aspartic Peptidases	A01 | A02 | A05 | A08 | A11 | A22 | A24 | A26 | A28 | A31 | A32 | A37	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Extracellular Cysteine Peptidases	C01 | C02 | C10 | C11 | C110 | C113 | C13 | C14 | C15 | C19 | C25 | C39 | C45 | C46 | C47 | C51 | C56 | C59 | C60 | C66 | C69 | C82 | C83 | C89 | C93	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Extracellular Glutamic Peptidases	G01	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Extracellular Metallo Peptidases	M01 | M02 | M03 | M04 | M05 | M06 | M07 | M08 | M09 | M10 | M11 | M12 | M13 | M14 | M15 | M16 | M18 | M19 | M20 | M23 | M24 | M26 | M28 | M30 | M32 | M34 | M35 | M36 | M42 | M43 | M44 | M48 | M49 | M50 | M54 | M55 | M56 | M57 | M60 | M61 | M64 | M66 | M67 | M72 | M73 | M74 | M75 | M76 | M78 | M81 | M82 | M84 | M85 | M86 | M88 | M93 | M96 | M97 | M98	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Extracellular Asparagine Peptidases	N04 | N10 | N11	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Extracellular Serine Peptidases	S01 | S06 | S08 | S09 | S10 | S16 | S26 | S28 | S37 | S41 | S45 | S46 | S49 | S50 | S51 | S53 | S55 | S59 | S60 | S66 | S73	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Extracellular Threonine Peptidases	T01 | T02 | T05 | T07	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Unknown Peptidases	U32 | U62 | U69 | U72 | U73 | U74	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Mixed Peptidases	P01	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Urease	@Urease	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Amidase	K01426	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Formamidase	K01455	Organic Nitrogen Transformation	Organic Nitrogen Transformation
+Urea Transport	K11963	Nitrogen uptake and transport	Nitrogen uptake and transport
+Ammonium Transport	K03320	Nitrogen uptake and transport	Nitrogen uptake and transport
+Nitrate/Nitrite Transporter	K02575	Nitrogen uptake and transport	Nitrogen uptake and transport
+C-P Lyase Complex	@C-P-Lyase-Complex	Phosphorus Acquisition and Metabolism	Phosphorus Acquisition and Metabolism
+Organic P Mineralization	@Organic-P-Mineralization	Phosphorus Acquisition and Metabolism	Phosphorus Acquisition and Metabolism
+Phytase	@Phytase	Phosphorus Acquisition and Metabolism	Phosphorus Acquisition and Metabolism
+Inorganic P Solubilization	@Inorganic-P-Solubilization	Phosphorus Acquisition and Metabolism	Phosphorus Acquisition and Metabolism
+High-affinity Pi uptake	@High-affinity-Pi-uptake	Phosphorus Acquisition and Metabolism	Phosphorus Acquisition and Metabolism
+Organosulfur Mineralization	[K04091 & K04092] | K03119 | K01130	Organic and Inorganic Sulfur	Sulfur Aqusition and Transformation
+Sulfur Reduction	@Sulfatereducer	Organic and Inorganic Sulfur	Sulfur Aqusition and Transformation
+Sulfur Oxidation	@sulfateoxidizer	Organic and Inorganic Sulfur	Sulfur Aqusition and Transformation
+Sulfur Transport	[K02048 & K02049 & K02050 & K02051] | [K15554 & K15555 & K15556] | [K15551 & K15552 & K15553]	Organic and Inorganic Sulfur	Sulfur Aqusition and Transformation
+Alpha-D-Glucosidase	K01188 | K05349 | K05350	Enzyme Assay Analog	Genomic 'Enzyme Assay'
+Alpha-D-Xylosidase	K01198 | K15920 | K22268	Enzyme Assay Analog	Genomic 'Enzyme Assay'
+Arylsulphatase	K01130	Enzyme Assay Analog	Genomic 'Enzyme Assay'
+N-Acetyl-Alpha-D-Glucosaminidase	K01227	Enzyme Assay Analog	Genomic 'Enzyme Assay'
+Phosphatase	K01078|K01093|K03788|K09474|K01077	Enzyme Assay Analog	Genomic 'Enzyme Assay'
+Leucine Aminopeptidase	K01255 | K11142	Enzyme Assay Analog	Genomic 'Enzyme Assay'
+Cellobiohydrolase	K01225 | K19668	Enzyme Assay Analog	Genomic 'Enzyme Assay'
+Alpha-1,4-Glucosidase	K01187 | K12047 | K12316 | K12317	Enzyme Assay Analog	Genomic 'Enzyme Assay'
+Peroxidase	K05910	Enzyme Assay Analog	Genomic 'Enzyme Assay'
+Phenoloxidase	K00421 | K05909	Enzyme Assay Analog	Genomic 'Enzyme Assay'
+Auxin [Iaa] Biosynthesis	K04103 | [K00466 & [K21801 | K01426]] | K01593| [K01501 & K01721]	Plant Growth Regulators	Phytohormones
+Auxin [Iaa] Turnover	K22027  | K23384  | K03397	Plant Growth Regulators	Phytohormones
+Acc Deaminase	[K01505]	Plant Growth Regulators	Phytohormones
+Cytokinin Biosynthesis	"K00791 | K22871 |K10760 "	Plant Growth Regulators	Phytohormones
+Cytokinin Turnover	K00279	Plant Growth Regulators	Phytohormones
+Gibberellins	[K21116 & K21117 & K21118] | [K04122 & K04123 & K05282] | K04124 | K12920 | K12919 | K20657 | K04121	Plant Growth Regulators	Phytohormones
+Sugar Derived	[K00697 & K01087] | [K01236 & K06044] | K05343 | [K00009 & K19270]	Environmental Adaptations	Compatible solute biosynthesis
+"Glycosylated "	[K03692 & K05978] | [K05947 & K07026] | K18818	Environmental Adaptations	Compatible solute biosynthesis
+Amino Acid Derived	[K00931 & K00147 & K00286] | [K06718 & K00836 & K06720]	Environmental Adaptations	Compatible solute biosynthesis
+Glycine betaine related	[[K00108 | K11440] & K00130] | [K18896 & K18897]	Environmental Adaptations	Compatible solute biosynthesis
+Superoxide	@Superoxide	Environmental Adaptations	Other Stress Adaptation
+Peroxide-catalase	@Peroxide-catalase	Environmental Adaptations	Other Stress Adaptation
+Peroxide-peroxiredoxin	@Peroxide-peroxiredoxin	Environmental Adaptations	Other Stress Adaptation
+Cd/Zn/Co Heavy Metal Efflux	[K15726 & K15727 & K15725]	Heavy Metals	Anthropogenic Stressors
+Cd/Zn ATPase Efflux (CadA)	K01534	Heavy Metals	Anthropogenic Stressors
+Copper Detox	@CopperDetox	Heavy Metals	Anthropogenic Stressors
+Arsenic Detox	@ArsenicDetox	Heavy Metals	Anthropogenic Stressors
+Arsenic Redox Metabolism	@ArsenicRedox	Heavy Metals	Anthropogenic Stressors
+High Affinity Zn Uptake	at_least(2,PRESENCE,[K02077, K02078, K02078])	Heavy Metals	Anthropogenic Stressors
+Pesticide-Pyrethroid Degradation	"K20992 "	Potential pesticide degradation	Anthropogenic Stressors
+Pesticide-Atrazine Degradation	K05394 & K03382 & K08710	Potential pesticide degradation	Anthropogenic Stressors
+Pesticide-2,4-D degradation	K06912	Potential pesticide degradation	Anthropogenic Stressors

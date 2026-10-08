@@ -797,7 +797,7 @@ class Evaluator:
         samples: List[str],
         present_map: Dict[str, np.ndarray],
         sample_col: str,
-        annotations: Optional[pl.DataFrame] = None,
+        annotations: Optional[pl.DataFrame],
     ):
         self.samples = samples
         self.present_map = present_map
@@ -1188,9 +1188,9 @@ def evaluate_cycles(
     compiled: CompiledRules,
     samples: List[str],
     present_map: Dict[str, np.ndarray],
+    annotations: Optional[pl.DataFrame],
     group_col: Optional[str] = "group",
     label_col: Optional[str] = "name",
-    annotations: Optional[pl.DataFrame] = None,
     sample_col: Optional[str] = None,
     additional_cols: Optional[List[str]] = None,
     anno_df: pl.DataFrame = None,
@@ -1224,7 +1224,9 @@ def evaluate_cycles(
                     frame.filter(pl.col(label_col) == rn).item(0, "rule_options")
                     or "{}"
                 )
-                if not should_include(json.loads(rule_options), set(frame.columns)):
+                if not should_include(
+                    json.loads(rule_options), set(annotations.columns)
+                ):
                     continue
 
             expr = compiled.rules[rn]

@@ -501,7 +501,7 @@ def load_rules(
     if not has_alias_col:
         if not alias_col:
             alias_col = "alias"
-        lf = lf.with_columns(pl.col(label_col).str.replace(" ", "").alias(alias_col))
+        lf = lf.with_columns(pl.lit(None).cast(pl.String).alias(alias_col))
 
     if clf is not None:
         clf = clf.with_columns(
@@ -577,6 +577,14 @@ def expand_macros(
             stack.pop()
         elif isinstance(expr, Name):
             name = expr.value
+            if name in definitions:
+                raise RuleError(
+                    "Identity found in rule that matches alias name without alias syntax."
+                    f"Name in question: `{name}`"
+                    "\nGene ids in rules and aliases need to have different and unique names."
+                    " Check if you meant to reference an alias with an `@` symbol."
+                    " Or change your alias name to be unique from your gene id."
+                )
             out = expr
             # This will slightly
             if add_name_to_needed and not skip_needed:

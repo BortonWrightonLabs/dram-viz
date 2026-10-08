@@ -356,6 +356,7 @@ class ASTTransformer(Transformer):
 class CompiledRules:
     rules: Dict[str, Expr]  # top-level rules with macros expanded
     needed_features: Set[str]
+    needed_features_raw: Set[str]
     features_by_rules: Dict[str, Set[str]]
     trees_by_rules: Dict[str, nx.DiGraph]
     df: pl.DataFrame
@@ -385,7 +386,8 @@ class CompiledRules:
 
         return cls(
             rules=rules_expanded,
-            needed_features=needed_features,
+            needed_features={item.upper() for item in needed_features},
+            needed_features_raw=needed_features,
             features_by_rules=features_by_rules,
             trees_by_rules=trees_by_rules,
             df=lf.collect(),
@@ -588,7 +590,7 @@ def expand_macros(
             out = expr
             # This will slightly
             if add_name_to_needed and not skip_needed:
-                needed_features.add(name.upper())
+                needed_features.add(name)
             entries, exits = {expr}, {expr}
         elif isinstance(expr, (Number, String)):
             out = expr
